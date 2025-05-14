@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Resizable and Draggable Div Example</title>
+  <style>
+
+      #frm_grid {
+        position: absolute;
+        display: grid;
+        grid-template-columns: 10px auto 10px;
+        grid-template-rows: 10px auto 10px;
+        // ease-in-out
+        //transition: all 500ms ease-in-out;
+      }
+
+      #frm_grid:hover{
+        border: 1px solid lightgrey;
+        border-radius: 5px;
+        //transition: all 500ms ease-in-out;
+      }
+
+      .frm_o:hover {
+        background: #f9f9f9;
+        border: 1px solid lightgrey;
+        border-radius: 5px;
+        //transition: all 500ms ease-in-out;
+      }
+
+      .frm_o {
+
+      }
+
+
+  </style>
+</head>
+<body>
+
+<div id="frm_grid" style="left: 10px; width: 250px; height: 200px">
+  <div id="f_tl" class="frm_o" style="cursor: nw-resize"></div><div id="f_tm" class="frm_o" style="cursor: ns-resize"></div><div id="f_tr" class="frm_o" style="cursor: ne-resize"></div>
+  <div id="f_ml" class="frm_o" style="cursor: ew-resize"></div><div id="f_mm" class="frm_mm"></div><div id="frm_mr" class="frm_o" style="cursor: ew-resize"></div>
+  <div id="f_bl" class="frm_o" style="cursor: sw-resize"></div><div id="f_bm" class="frm_o" style="cursor: ns-resize"></div><div id="f_br" class="frm_o" style="cursor: se-resize"></div>
+</div>
+
+
+</body>
+
+<script>
+  const BORDER_SIZE = 10;
+  const panel = document.getElementById("frm_grid");
+  const frm_mm = document.getElementById("frm_mm");
+
+  let m_x, m_y, m_dir_lr, m_dir_tb, m_style; // dir [lr][tb]  l=-x r=+x / b=-y t=+y
+  function resize(e){
+    const dx = m_x - e.x;
+    const dy = m_y - e.y;
+    m_x = e.x;
+    m_y = e.y;
+    m_move = 0 == m_dir_lr && 0 == m_dir_tb
+    if (m_dir_lr < 0 || m_move) panel.style.left   = (m_style.left_i   = m_style.left_i    - dx) + "px"; // left
+    if ( m_dir_lr )             panel.style.width  = (m_style.width_i  = m_style.width_i   - m_dir_lr * dx) + "px"; // width or left (compensate for left)
+    if (m_dir_tb < 0 || m_move) panel.style.top    = (m_style.top_i    = m_style.top_i     - dy) + "px"; // top
+    if ( m_dir_tb )             panel.style.height = (m_style.height_i = m_style.height_1 - m_dir_tb * dy) + "px"; // bottom or top (compensate for top)
+    /*
+    let e_target_style = getComputedStyle(panel, ''); // panel = e.target.parentNode // todo  calc getComputedStyle(e.target, '') only once and then only work with the values
+    if (m_dir_lr < 0 || m_move) panel.style.left = (parseInt(e_target_style.left) - dx) + "px"; // left
+    if ( m_dir_lr ) panel.style.width = (parseInt(e_target_style.width) - m_dir_lr * dx) + "px"; // width or left (compensate for left)
+    if (m_dir_tb < 0 || m_move) panel.style.top = (parseInt(e_target_style.top) - dy) + "px"; // top
+    if ( m_dir_tb ) panel.style.height = (parseInt(e_target_style.height) - m_dir_tb * dy) + "px"; // bottom or top (compensate for top)
+    */
+  }
+
+  panel.addEventListener("mousedown", function(e){
+    // idea - touch point liegt immer innen -> d.h. mit pos/negative wert kann zwischen l und r unterschieden werden
+    // annahme: width > BORDER_SIZE
+    allowMove = true; // allow moving by draging non-sesitive border area / center
+    let e_target_id = e.target.id;
+    m_dir_lr = e_target_id.includes("l") ? -1 : e_target_id.includes("r") ? +1 : 0 ;
+    m_dir_tb = e_target_id.includes("t") ? -1 : e_target_id.includes("b") ? +1 : 0 ;
+    if (0 != m_dir_lr || 0 != m_dir_tb || allowMove)  {
+      console.log( " -->  start " + (m_dir_lr) + " " + (m_dir_tb));
+      m_x = e.x;
+      m_y = e.y;
+      m_style = getComputedStyle(panel, '');
+        // convert to int to speed up calculations
+        m_style.left_i = parseInt(m_style.left);
+        m_style.top_i = parseInt(m_style.top);
+        m_style.width_i = parseInt(m_style.width);
+        m_style.height_i = parseInt(m_style.height);
+      document.addEventListener("mousemove", resize, false);
+    }
+  }, false);
+
+  document.addEventListener("mouseup", function(){
+      document.removeEventListener("mousemove", resize, false);
+  }, false);
+</script>
+
+</body>
+</html>

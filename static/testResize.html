@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Resizable and Draggable Div Example</title>
+  <style>
+    .resizable {
+        width: 200px;
+        height: 200px;
+        border: 2px solid #007BFF;
+        position: relative;
+        overflow: auto;
+        resize: both; /* Allows resizing */
+        padding: 10px;
+        box-sizing: border-box;
+        cursor: move; /* Change cursor when hovering */
+    }
+
+    .dragger {
+        width: 100%;
+        height: 10px;
+        background: #007BFF;
+        position: absolute;
+        top: 0;
+        left: 0;
+        cursor: move;
+        z-index: 1000;
+    }
+
+    .resizer {
+        width: 10px;
+        height: 10px;
+        background: #007BFF;
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        cursor: se-resize;
+        z-index: 1000;
+    }
+  </style>
+</head>
+<body>
+
+<div class="resizable" id="draggable">
+  <div class="dragger"></div>
+  <p>Resize me and drag me!</p>
+  <div class="resizer"></div>
+</div>
+
+<script>
+  const resizable = document.querySelector('.resizable');
+  const resizer = document.querySelector('.resizer');
+
+  let isResizing = false;
+
+  // Resizing functionality
+  resizer.addEventListener('mousedown', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      isResizing = true;
+      window.addEventListener('mousemove', resize);
+      window.addEventListener('mouseup', stopResize);
+  });
+
+  function resize(e) {
+      resizable.style.width = e.clientX - resizable.getBoundingClientRect().left + 'px';
+      resizable.style.height = e.clientY - resizable.getBoundingClientRect().top + 'px';
+  }
+
+  function stopResize() {
+      isResizing = false;
+      window.removeEventListener('mousemove', resize);
+      window.removeEventListener('mouseup', stopResize);
+  }
+
+  // Dragging functionality
+  let isDragging = false;
+  let offsetX, offsetY;
+
+  resizable.addEventListener('mousedown', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      isDragging = true;
+      offsetX = e.clientX - resizable.getBoundingClientRect().left;
+      offsetY = e.clientY - resizable.getBoundingClientRect().top;
+      window.addEventListener('mousemove', drag);
+      window.addEventListener('mouseup', stopDrag);
+  });
+
+  function drag(e) {
+      if (isDragging) {
+          resizable.style.left = e.clientX - offsetX + 'px';
+          resizable.style.top = e.clientY - offsetY + 'px';
+          resizable.style.position = 'absolute'; // Set position to absolute for dragging
+      }
+  }
+
+  function stopDrag() {
+      isDragging = false;
+      window.removeEventListener('mousemove', drag);
+      window.removeEventListener('mouseup', stopDrag);
+  }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,14 @@
+/.idea
+/static/.replit
+/static/.cache
+/static/.config
+/out
+/target
+/${project.build.directory}
+/.gradle
+/build
+/data
+*.bak
+/qry.jar
+/qry-2.0.002-SNAPSHOT.jar
+/qry-2.0.004-SNAPSHOT.jar

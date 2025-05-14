@@ -1,0 +1,1261 @@
+html, body {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+}
+
+
+
+
+
+
+/*
+
+https://www.w3schools.com/cssref/playdemo.php?filename=playcss_justify-self
+
+*/
+
+
+.container {
+  position: relative;
+}
+
+.grid-container {
+  display: grid;
+  grid-template-columns: auto auto auto;
+  border-radius: 5px;
+  padding-right: 5px; /*gain space to scrollbar */
+  /* Arial  ArialNarrow  Helvetica Courier   Courier New  Verdana  Candara  Calibri */
+  font-family: Verdana;
+  font-size: 9px;
+  column-gap: 00px;
+  row-gap: 5px;
+  /*row-gap: 10px;*/
+  overflow: scroll; /* needs height to work properly*/
+  margin-top: 5px;
+  /*  justify-content:center; TODO is good when grid is smaller than grid-box,  but makes first columns inaccessible on oversize */
+}
+
+.grid-outdated{
+    color: lightgray;
+}
+
+.grid-item:hover {
+  background__: white;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+}
+
+.grid-idx:focus,
+.grid-idx:focus-visible,
+.grid-idx:focus-within,
+.grid-item:focus,
+.grid-item:focus-visible,
+.grid-item:focus-within {
+  outline: none;
+  border: 1px solid #d3d3d3;
+}
+
+.grid-item {
+  border: 1px solid transparent; /* prevent wobbeling on hover*/ 
+  border-radius: 5px;
+  /* border: none; */
+  padding: 2px;
+  text-align: right;
+  transition: all 0.3s ease;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.grid-group:hover {
+  background__: white;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+}
+
+.grid-group-head{
+    color: blue;
+}
+
+.grid-group-val {
+  color: white; /* sort of hide but claim space for aligning */
+  z-index: -3; /* move behind readable text */
+  visibility: hidden; /* keep space occupied but do not show ...*/
+  border-radius: 5px;
+}
+
+.grid-group-idx::after {
+  font-family: 'Font Awesome 5 Free'; /*FontAwesome;*/
+  content: "\f00c"; /* FontAwesome 4 Unicode \/ */
+  font-weight: 900;
+  margin-left: 0.3em; /* same as padding-left set on li */
+  /* width: 1.3em; */ /* same as padding-left set on li */
+  transition: transform 500ms ease-in-out;
+}
+
+.gridFolded::after {
+  content: "\f053"; /* FontAwesome 4 Unicode < */
+  transition: transform 500ms ease-in-out;
+  font-weight: 900;
+}
+
+
+.grid-group-idx {
+  border: 1px solid transparent; /* prevent wobbeling on hover*/
+  border-radius: 5px;
+  /* border: none; */
+  padding: 2px;
+  text-align: left;
+      color: blue;
+
+}
+
+.grid-idx {
+  padding: 2px;
+  border: 1px solid transparent; /* prevent wobbeling on hover*/ 
+  border-radius: 5px;
+  /* font-weight: bold;*/
+  text-align: right;
+}
+
+
+-- fail
+-- .grid-container > *:nth-child(3n + 5), .grid-container > *:nth-child(3n + 6) {
+--  background: aliceblue;
+-- }
+
+
+.grid-odd___{
+  background-color: rgb(236, 249, 253, 0.8);
+  border-radius: 5px;
+}
+
+.grid-3rd:not(:hover).grid-3rd:not(:focus-within).grid-3rd:not(:focus).grid-3rd:not(:focus-visible) {
+  border-radius: 0px;
+  border-bottom: 1px dashed  lightblue;
+  /*position: absolute;*/
+  /*grid-column: 2 / -1; /*--- maybe used for grouping ....*/
+  /*z-index: -1;*/
+}
+
+.grid-head {
+  padding: 2px;
+  /*font-weight: bold;*/
+  text-align: right;
+  border-radius: 0px;
+  border-bottom: 1px solid lightblue;
+  overflow: hidden;
+  height: 1em; /* KLUDGE to suppress multiline due to overflow by icons on small columns ... -> TODO use overlay to handle icons */
+  position: sticky;
+  top: 0;
+  background: white;
+  display: flex;
+  justify-content: space-between;
+}
+
+.grid-head .headlineIconSpaceL .fa{
+  width: 1px;
+  padding: 0 5px 0 0;
+}
+
+
+
+.grid-monospace {
+  font-family: 'Courier New', monospace;
+  font-size: larger;
+  padding: 0;
+  border: 0px solid transparent;
+}
+
+.index {
+  float: left;
+  padding-right: 10px;
+}
+
+.grid-filter{
+  padding: 10px 20px 10px 20px;
+}
+
+.grid-with-filter{
+  float: right;
+  /* width: 95%; */
+  /* padding: 10px 20px 10px 20px;    gain space for move handle */
+  padding: 5px 20px 10px 20px; /* dragHand is positioned absolute */
+  /*border: 1px dashed white;*/
+  border: 1px solid lightblue;
+  border-radius: 5px;
+  /*background: rgba(255,255,255,0.90);*/
+  background: rgba(255,255,255);
+  __box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.2);
+  transition: all 50ms ease-out;
+  /* overflow: auto;    ....needed to get resize corner ... --> so keep grid always with proper max-height and everything is good ;-( */
+  overflow: hidden; /*prevent scorllbar & toggle resizeObserver on entering by overflow */
+  scrollbar-width: none;
+}
+
+.grid-resizeOrMove {
+  __box-shadow: 10px 10px 5px lightblue;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+/*for chrome - need to stay if resizing/drag and mouse left the grid - mouse not over grid any more */
+.grid-with-filter:hover, .grid-with-filter.dragging {
+  /* resizable with handle */
+  border: 1px solid lightblue;
+  resize: both;
+  /* overflow: auto;     -- needed to get resize corner ... --> so keep grid always with proper max-height and everything is good ;-( */
+  /*  to much action for only selecting a grid
+  __box-shadow: 10px 10px 5px lightblue;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+  */
+}
+
+
+
+
+.contextAndCM {
+  display: flex;
+  align-items: baseline;
+}
+
+.contextAndCM .contextRight {
+  display: flex;
+  gap: 10px;
+}
+
+.contextAndCM .contextRight .fa {
+  font-size: 14px;
+  visibility: hidden;
+}
+
+.contextAndCM .contextRight:hover .fa {
+  visibility: visible;
+}
+
+
+#resizeFrame{
+    position: absolute ;
+    border: gray 1px dotted;
+    left: 50px;
+    top: 50px;
+    width: 50px;
+    height: 50px;
+    text-align: center;
+    vertical-align: middle;
+    font-family: verdana, sans-serif;
+    font-size: small;
+    color: gray;
+    z-index: 1000;
+    display: none;
+    border-radius: 5px;
+    transition: all 100ms ease-out 100ms;
+}
+
+
+#resizeFramePure {
+  text-align: center;
+  font-family: Verdana;
+  font-size: 9px;
+  color: #10b8ee;
+  /*padding: 5px;*/
+  border-radius: 5px;
+  /*background: lightgray;*/
+}
+
+.modified { 
+  background-color: rgba(150, 200, 256, 0.5) ;
+  border: 1px solid rgba(0, 0, 255, 0.3) ;
+  border-radius: 5px;
+}
+
+.modified:hover { 
+  border: 1px solid rgba(0, 0, 255, 0.5) ;
+  border-radius: 5px;
+}
+
+.saved { 
+  background: rgba(90, 256,170, 0.7);
+  border: 1px solid rgba(0, 100, 0, 0.3) ;
+  border-radius: 5px;
+}
+
+.saved:hover {
+  border: 1px solid rgba(0, 100, 0, 0.5) ;
+  border-radius: 5px;
+}
+
+.headlineIconSpace{
+  /* margin-left: 5px; */
+    /*position: absolute;*/
+    float: right;
+}
+
+.headlineIconSpaceL{
+    float: right;
+}
+
+.colName{
+    float: right;
+    /*cursor: default;
+    transition: cursor 6s linear 6s;  not delayable */
+}
+
+.colName:hover {
+    /* cursor: move;*/ /* just irritating*/
+}
+
+
+.superscript{
+  position: relative;
+  font: normal normal 0.6em arial,serif;
+  margin-left: 2px;  
+  font-size: 0.6em;
+  bottom: 0.5em;  
+}
+
+.fa {
+   /*padding: 2px 12px;*/
+   width: 10px;
+   transition: transform 200ms ease-in-out; /* allow small colums to change even if icons in over column */
+ }
+
+
+.icon-inactiv , .fa-sort{
+  /*color: lightgray;*/
+  color: white;
+  transition: color 200ms ease-in-out;
+  /*-webkit-text-stroke: 1px white; *//* simulate light */
+}
+
+
+.grid-head:hover .icon-inactiv , .grid-head:hover .fa-sort,  .headlineIconSpace:hover .icon-inactiv , .headlineIconSpace:hover .fa-sort
+    , .fa:hover .icon-inactiv , .fa:hover .fa-sort
+    {
+  color: blue;
+  -webkit-text-stroke: 1px white; /* simulate light */
+  transition-delay: 1000ms;
+  transition: color 500ms ease-in-out;
+}
+
+
+.icon-inactiv:hover , .fa-sort:hover{
+  color: gray !important;
+  -webkit-text-stroke: 0px white; /* simulate light */
+  transition-delay: 1000ms;
+  transition: color 500ms ease-in-out;
+}
+
+
+
+#spacer{
+  clear: both;
+  height: 800px;
+}
+
+#log_div{
+  margin-top: 50px;
+}
+
+#hint{
+  color: red
+}
+
+
+
+/*
+
+Menu 
+
+*/
+
+
+#context-menu {
+  position: fixed;
+  z-index: 10000;
+/*  font-family: "Open Sans", sans-serif;*/
+  padding: 0;
+  margin: 0;
+  width: 150px;
+  background: #1b1a1a;
+  border-radius: 5px;
+  transform: scale(0);
+  transform-origin: top left;
+  /* adjust for UL */
+  background: rgba(255,255,255,0.8);
+  width: 300px;
+  padding: 10px;
+  border: 1px solid rgb(173, 216, 230);
+}
+
+#context-menu.visible {
+  transform: scale(1);
+  transition: transform 200ms ease-in-out;
+}
+
+#context-menu .item {
+  padding: 8px 10px;
+  font-size: 15px;
+  color: #eee;
+  cursor: pointer;
+  border-radius: inherit;
+}
+
+#context-menu .item:hover {
+  background: #343434;
+}
+
+/*
+
+  Menu ul
+
+*/
+
+ul, #myUL {
+  list-style-type: none;
+}
+
+#myUL {
+  margin: 0;
+  padding: 0;
+}
+
+.caret {
+  cursor: pointer;
+  -webkit-user-select: none; /* Safari 3.1+ */
+  -moz-user-select: none; /* Firefox 2+ */
+  -ms-user-select: none; /* IE 10+ */
+  user-select: none;
+}
+
+.caret::before {
+  content: "\25B6";
+  color: black;
+  display: inline-block;
+  margin-right: 6px;
+}
+
+.caret-down::before {
+  -ms-transform: rotate(90deg); /* IE 9 */
+  -webkit-transform: rotate(90deg); /* Safari */
+  transform: rotate(90deg);  
+}
+
+.nested {
+  display: none;
+}
+
+.active {
+  display: block;
+}
+
+
+/*
+
+  Circular menu 
+
+*/
+
+
+
+#context-menu-circular {
+  position: fixed;
+  z-index: 10000;
+/*  font-family: "Open Sans", sans-serif;*/
+  padding: 0;
+  margin: 0;
+  width: 50px;
+  background: none;
+  border-radius: 5px;
+  transform: scale(0);
+  transform-origin: top left;
+  /* adjust for UL */
+  /*background: rgba(255,255,255,0.8);
+  width: 150px;
+  padding: 10px;
+  border: 1px solid rgb(173, 216, 230);
+  */
+}
+
+#context-menu-circular.visible {
+  transform: scale(1);
+  transition: transform 200ms ease-in-out;
+}
+
+.cmc-filter-bar {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 5px;
+  margin-left: -4px;
+  position: absolute;
+}
+
+.cmc-filter-bar-label {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 16px;
+  height: 16px;
+}
+
+.cmc-filter-bar-label input {
+  display: none;
+}
+
+.cmc-filter-bar-label input[type="checkbox"] ~ .fa {
+  color: rgba(0, 0, 0, 0.2);
+  width: auto;
+  height: auto;
+  font-size: 16px;
+}
+
+.cmc-filter-bar-label input[type="checkbox"]:checked ~ .fa {
+  color: rgba(0, 0, 255, 0.5);
+}
+
+.cmc-filter-bar-label:hover input[type="checkbox"] ~ .fa {
+  color: rgba(0, 0, 255, 0.3) !important;
+}
+
+
+.action_custom input[type="checkbox"] ~ .fa {
+    color: red !important; /* overrule preset icon color */
+}
+
+
+/*
+
+
+    Circular Menu
+
+*/
+
+.cmc-item {
+  position: fixed;
+  z-index: 10000;
+/*  font-family: "Open Sans", sans-serif;*/
+  margin: 0;
+  border-radius: 5px;
+  width: 150px;
+  height: 18px;
+  padding: 3px 5px 1px 5px ;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.cmc-item .fa {
+  width: 16px;
+}
+
+.cmc-item-descr {
+    white-space: nowrap;
+    font-family: Arial, sans-serif;
+    font-size: 13px;
+}
+
+
+.cmc-item-byKey, .cmc-item-byKey:hover {
+    color: orange;
+}
+
+.cmc-item-descr:hover, .cmc-item-highlight .cmc-item-descr {
+    color: red;
+}
+
+
+.cmc-item-highlight {
+/*
+    color: red;
+    font-weight: bold;
+*/
+}
+
+.cmc-item-left {
+  justify-content: flex-end;
+}
+
+
+.cmc-item-descr-left {
+  text-align: right;
+}
+
+.cmc-item:not(.cmc-item-left) {
+  background: radial-gradient(circle at 100% 100%, #ffffff 0, #ffffff 7px, transparent 7px) 0% 0%/8px 8px no-repeat,
+  radial-gradient(circle at 0 100%, #ffffff 0, #ffffff 7px, transparent 7px) 100% 0%/8px 8px no-repeat,
+  radial-gradient(circle at 100% 0, #ffffff 0, #ffffff 7px, transparent 7px) 0% 100%/8px 8px no-repeat,
+  radial-gradient(circle at 0 0, #ffffff 0, #ffffff 7px, transparent 7px) 100% 100%/8px 8px no-repeat,
+  linear-gradient(#ffffff, #ffffff) 50% 50%/calc(100% - 2px) calc(100% - 16px) no-repeat,
+  linear-gradient(#ffffff, #ffffff) 50% 50%/calc(100% - 16px) calc(100% - 2px) no-repeat,
+  linear-gradient(-165deg, transparent 50%, rgba(0,0,0,0.35) 100%);
+  border-radius: 8px;
+  padding: 3px 6px;
+}
+
+.cmc-item:not(.cmc-item-left):hover, .cmc-item:not(.cmc-item-left).cmc-item-highlight {
+  background: radial-gradient(circle at 100% 100%, #f6f6f6 0, #f6f6f6 7px, transparent 7px) 0% 0%/8px 8px no-repeat,
+  radial-gradient(circle at 0 100%, #f6f6f6 0, #f6f6f6 7px, transparent 7px) 100% 0%/8px 8px no-repeat,
+  radial-gradient(circle at 100% 0, #f6f6f6 0, #f6f6f6 7px, transparent 7px) 0% 100%/8px 8px no-repeat,
+  radial-gradient(circle at 0 0, #f6f6f6 0, #f6f6f6 7px, transparent 7px) 100% 100%/8px 8px no-repeat,
+  linear-gradient(#f6f6f6, #f6f6f6) 50% 50%/calc(100% - 2px) calc(100% - 16px) no-repeat,
+  linear-gradient(#f6f6f6, #f6f6f6) 50% 50%/calc(100% - 16px) calc(100% - 2px) no-repeat,
+  linear-gradient(-165deg, transparent 50%, rgba(0,0,0,0.35) 100%);
+  border-radius: 8px;
+  padding: 3px 6px;
+}
+
+.cmc-item:not(.cmc-item-left):nth-child(even) {
+  background: radial-gradient(circle at 100% 100%, #ffffff 0, #ffffff 7px, transparent 7px) 0% 0%/8px 8px no-repeat,
+  radial-gradient(circle at 0 100%, #ffffff 0, #ffffff 7px, transparent 7px) 100% 0%/8px 8px no-repeat,
+  radial-gradient(circle at 100% 0, #ffffff 0, #ffffff 7px, transparent 7px) 0% 100%/8px 8px no-repeat,
+  radial-gradient(circle at 0 0, #ffffff 0, #ffffff 7px, transparent 7px) 100% 100%/8px 8px no-repeat,
+  linear-gradient(#ffffff, #ffffff) 50% 50%/calc(100% - 2px) calc(100% - 16px) no-repeat,
+  linear-gradient(#ffffff, #ffffff) 50% 50%/calc(100% - 16px) calc(100% - 2px) no-repeat,
+  linear-gradient(-15deg, transparent 50%, rgba(0,0,0,0.35) 100%);
+  border-radius: 8px;
+  padding: 3px 6px;
+}
+
+.cmc-item:not(.cmc-item-left):nth-child(even):hover, .cmc-item:not(.cmc-item-left):nth-child(even).cmc-item-highlight {
+  background: radial-gradient(circle at 100% 100%, #f6f6f6 0, #f6f6f6 7px, transparent 7px) 0% 0%/8px 8px no-repeat,
+  radial-gradient(circle at 0 100%, #f6f6f6 0, #f6f6f6 7px, transparent 7px) 100% 0%/8px 8px no-repeat,
+  radial-gradient(circle at 100% 0, #f6f6f6 0, #f6f6f6 7px, transparent 7px) 0% 100%/8px 8px no-repeat,
+  radial-gradient(circle at 0 0, #f6f6f6 0, #f6f6f6 7px, transparent 7px) 100% 100%/8px 8px no-repeat,
+  linear-gradient(#f6f6f6, #f6f6f6) 50% 50%/calc(100% - 2px) calc(100% - 16px) no-repeat,
+  linear-gradient(#f6f6f6, #f6f6f6) 50% 50%/calc(100% - 16px) calc(100% - 2px) no-repeat,
+  linear-gradient(-15deg, transparent 50%, rgba(0,0,0,0.35) 100%);
+  border-radius: 8px;
+  padding: 3px 6px;
+}
+
+
+
+.cmc-item-left {
+  background: radial-gradient(circle at 100% 100%, #ffffff 0, #ffffff 7px, transparent 7px) 0% 0%/8px 8px no-repeat,
+  radial-gradient(circle at 0 100%, #ffffff 0, #ffffff 7px, transparent 7px) 100% 0%/8px 8px no-repeat,
+  radial-gradient(circle at 100% 0, #ffffff 0, #ffffff 7px, transparent 7px) 0% 100%/8px 8px no-repeat,
+  radial-gradient(circle at 0 0, #ffffff 0, #ffffff 7px, transparent 7px) 100% 100%/8px 8px no-repeat,
+  linear-gradient(#ffffff, #ffffff) 50% 50%/calc(100% - 2px) calc(100% - 16px) no-repeat,
+  linear-gradient(#ffffff, #ffffff) 50% 50%/calc(100% - 16px) calc(100% - 2px) no-repeat,
+  linear-gradient(165deg, transparent 50%, rgba(0,0,0,0.35) 100%);
+  border-radius: 8px;
+  padding: 3px 6px;
+}
+
+.cmc-item-left:hover, .cmc-item-left.cmc-item-highlight {
+  background: radial-gradient(circle at 100% 100%, #f6f6f6 0, #f6f6f6 7px, transparent 7px) 0% 0%/8px 8px no-repeat,
+  radial-gradient(circle at 0 100%, #f6f6f6 0, #f6f6f6 7px, transparent 7px) 100% 0%/8px 8px no-repeat,
+  radial-gradient(circle at 100% 0, #f6f6f6 0, #f6f6f6 7px, transparent 7px) 0% 100%/8px 8px no-repeat,
+  radial-gradient(circle at 0 0, #f6f6f6 0, #f6f6f6 7px, transparent 7px) 100% 100%/8px 8px no-repeat,
+  linear-gradient(#f6f6f6, #f6f6f6) 50% 50%/calc(100% - 2px) calc(100% - 16px) no-repeat,
+  linear-gradient(#f6f6f6, #f6f6f6) 50% 50%/calc(100% - 16px) calc(100% - 2px) no-repeat,
+  linear-gradient(165deg, transparent 50%, rgba(0,0,0,0.35) 100%);
+  border-radius: 8px;
+  padding: 3px 6px;
+}
+
+.cmc-item-left:nth-child(odd) {
+  background: radial-gradient(circle at 100% 100%, #ffffff 0, #ffffff 7px, transparent 7px) 0% 0%/8px 8px no-repeat,
+  radial-gradient(circle at 0 100%, #ffffff 0, #ffffff 7px, transparent 7px) 100% 0%/8px 8px no-repeat,
+  radial-gradient(circle at 100% 0, #ffffff 0, #ffffff 7px, transparent 7px) 0% 100%/8px 8px no-repeat,
+  radial-gradient(circle at 0 0, #ffffff 0, #ffffff 7px, transparent 7px) 100% 100%/8px 8px no-repeat,
+  linear-gradient(#ffffff, #ffffff) 50% 50%/calc(100% - 2px) calc(100% - 16px) no-repeat,
+  linear-gradient(#ffffff, #ffffff) 50% 50%/calc(100% - 16px) calc(100% - 2px) no-repeat,
+  linear-gradient(15deg, transparent 50%, rgba(0,0,0,0.35) 100%);
+  border-radius: 8px;
+  padding: 3px 6px;
+}
+
+.cmc-item-left:nth-child(odd):hover, .cmc-item-left:nth-child(odd).cmc-item-highlight {
+  background: radial-gradient(circle at 100% 100%, #f6f6f6 0, #f6f6f6 7px, transparent 7px) 0% 0%/8px 8px no-repeat,
+  radial-gradient(circle at 0 100%, #f6f6f6 0, #f6f6f6 7px, transparent 7px) 100% 0%/8px 8px no-repeat,
+  radial-gradient(circle at 100% 0, #f6f6f6 0, #f6f6f6 7px, transparent 7px) 0% 100%/8px 8px no-repeat,
+  radial-gradient(circle at 0 0, #f6f6f6 0, #f6f6f6 7px, transparent 7px) 100% 100%/8px 8px no-repeat,
+  linear-gradient(#f6f6f6, #f6f6f6) 50% 50%/calc(100% - 2px) calc(100% - 16px) no-repeat,
+  linear-gradient(#f6f6f6, #f6f6f6) 50% 50%/calc(100% - 16px) calc(100% - 2px) no-repeat,
+  linear-gradient(15deg, transparent 50%, rgba(0,0,0,0.35) 100%);
+  border-radius: 8px;
+  padding: 3px 6px;
+}
+
+
+
+.cmc-item:hover {
+  /*background: rgba(255,255,255,0.8);*/
+  /*border: 1px solid rgb(255, 128, 64);*/
+  
+}
+
+/*
+  Buttons to enter cmc
+
+*/
+
+.context_env:hover, .context_date:hover {
+    cursor:pointer;
+    color:red;
+}
+
+
+
+/*
+
+ log DIV
+
+*/
+
+
+.logDiv {
+  /* max-height: 100px;    problems on drag and drop */
+  height: 100px;
+  width: 90%;
+  margin: 20px;
+}
+
+.logDiv:hover {
+    overflow-y: auto;
+   /* max-height: 100px; */
+}
+
+
+/*
+
+  Scrollbar 
+
+*/
+
+/*
+html::-webkit-scrollbar {
+    width: 10px;
+  }
+
+html::-webkit-scrollbar-track {
+    background: rgb(179, 177, 177);
+    border-radius: 10px;
+}
+
+html::-webkit-scrollbar-thumb {
+    background: rgb(136, 136, 136);
+    border-radius: 10px;
+  }
+
+html::-webkit-scrollbar-thumb:hover {
+    background: rgb(100, 100, 100);
+    border-radius: 10px;
+  }
+
+html::-webkit-scrollbar-thumb:active {
+    background: rgb(68, 68, 68);
+    border-radius: 10px;
+  }
+*/
+
+/* firefox     https://codepen.io/reacraf/pen/ExaBZzZ    */
+
+
+
+
+
+
+.resizable {
+  scrollbar-width: thin;
+  scrollbar-color: #e3e3e3 transparent;
+}
+
+/* firefox     https://codepen.io/reacraf/pen/ExaBZzZ    */
+//firefox
+
+.resizable {
+  scrollbar-width: thin;
+  scrollbar-color: $gray--lighter transparent;
+}
+.resizable:-webkit-scrollbar {
+  width: 11px;
+}
+.resizable:-webkit-scrollbar-track {
+  background: transparent;
+}
+.resizable:-webkit-scrollbar-thumb {
+  background-color: $gray--lighter;
+  border-radius: 6px;
+  border: 3px solid transparent;
+}
+
+/* webkit browsers */
+.resizable::-webkit-scrollbar,
+.resizable::-webkit-scrollbar-thumb {
+  height: 26px;
+  border-radius: 13px;
+  background-clip: padding-box;
+  border: 10px solid transparent;
+}
+
+.resizable::-webkit-scrollbar-thumb {        
+  box-shadow: inset 0 0 0 10px;
+}
+
+
+
+
+
+
+
+
+
+
+.logDiv{
+  overflow-y: scroll;
+  scrollbar-color: white  white;
+  scrollbar-width: none;
+}
+
+.logDiv:hover:not(.resizable), .log:hover {
+  overflow-y: scroll;
+  scrollbar-color: rgb(173, 216, 230) lightgray;
+  scrollbar-width: thin;
+  border-right: 1px solid lightgray; /* sidebaar indicator*/
+  border-bottom: 1px solid lightgray; /* sidebaar indicator*/
+}
+
+
+/*
+
+  resizer
+
+*/
+
+.resizable {  
+  position: relative; 
+}
+
+.resizer {
+  width: 10px; 
+  height: 3px; 
+  position:absolute; 
+  right: 0; 
+  bottom: 0;
+  cursor: se-resize;
+  /*background: blue;*/ 
+  border-top: 2px solid black;
+  border-bottom: 2px solid black;
+  rotate: -45deg;
+  /*rotate: 135deg; some how this creates a strange scrollbar 
+  scrollbar-width: none !important; */ 
+  z-index: 10000;
+}
+
+.resizerHorizontal {
+  width: 10px; 
+  height: 3px; 
+  /*background: black; */
+  position:absolute; 
+  right: 50%; 
+  bottom: 0; 
+  cursor: ns-resize;
+  /* like to bars */ 
+  border-top: 2px solid black;
+  border-bottom: 2px solid black;
+    z-index: 10000;
+
+  
+}
+
+
+/*
+
+  input mirror
+
+*/
+
+.CodeMirror {
+	clear: both;
+	/*width: 75%;*/
+  margin: auto; /* center */
+  margin-top: 5px; /* */
+  height: auto; /* fit to text -- could be set fixed value to scroll */
+ 	border: white 1px solid; /* prevent wobbeling */
+  border-radius: 5px;
+  
+}
+
+.CodeMirror:not(.cdm_hint_auto_sug):hover {
+ 	border: lightgray 1px solid;
+}
+
+
+
+/*
+
+    LOGIN
+
+*/
+
+
+#login {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  margin-top: -50px;
+  margin-left: -100px;
+  z-index: 1000000;
+  background: white;
+  padding: 0px 20px 0px 20px;
+  border: 1px solid lightblue;
+  border-radius: 5px;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+#login .bntClose {
+  color: gray;
+}
+
+#login .bntClose:hover {
+  color: black;
+}
+
+
+.bntClose:hover {
+    color: black;
+}
+
+.bntClose {
+    font-size:15px;
+    float: right;
+    margin-top: -9px;
+    cursor: default;
+}
+
+
+/*
+
+  Drag
+
+*/
+
+.draggable {
+  position: absolute;
+  z-index: 9;
+  /*
+  background-color: #f1f1f1;
+  border: 1px solid #d3d3d3;
+  text-align: center;
+  */
+}
+
+
+
+.dragHandle {
+  position: initial;
+  top: 0px; /* to overcome grid padding ..*/
+  left: 0px;
+  width: 100%;
+  height: 5px;
+  margin-left: -20px;
+  margin-top: -5px;
+  cursor: move;
+  background-color: #fffff;
+  color: #fff;
+  padding: 0px 40px 0px 0px;
+}
+
+.dragHandle .dragHandleBtn.fa-window-close{
+    margin-right: -30px;
+}
+
+
+.dragHandle:hover {
+  z-index: 10;
+  height: 10px;
+  padding: 15px 40px 0px 0px;
+  /*padding: 10px 0px 7px 0px;*/
+  background-color: #2196F3;
+  /*transition-delay: 1000ms;*/
+  transition: all 250ms ease-in-out 100ms;
+}
+
+
+.dragHandle:hover .dragHandleBtn{
+    visibility: visible ;
+}
+
+
+.dragHandleBtn {
+    visibility: hidden;
+}
+
+.dragHandle:hover .dragHandleBtn, .dragHandleFix .dragHandleBtn{
+    /* visibility: visible; */
+    transition: all 250ms ease-in-out 100ms; /* wait for handle ...*/
+}
+
+
+.dragOver {
+    cursor: copy; /*will not influence current cursor while dragging*/
+}
+
+/*
+  sticky handlebar by adding "dragHandleFix"-class
+*/
+
+.dragHandleFix:hover {
+  background-color: #2196F3;
+}
+
+
+.dragHandleFix, .dragHandleFix:hover {
+  padding: 15px 40px 0px 0px;
+  height: 10px;
+
+/*
+  padding: 15px 40px 0px 0px;
+  position: initial;
+  height: 10px;
+  width: 100%;
+  margin-left: -20px;
+  margin-top: -5px;
+*/
+}
+
+
+
+.dragHandleFix .dragHandleBtn{
+    color: lightgray;
+}
+
+.dragHandleFix .dragHandleBtn:hover{
+    color: black;
+}
+
+
+
+/*
+   msg
+*/
+
+
+#msg_rec_div {
+	position: fixed;
+	left: 70px;
+	z-index: 100;
+	bottom: 10px;
+    font-family: Verdana;
+    font-size: 9px;
+    transition: transform 500ms ease-in-out 0s, opacity 500ms ease-in-out; /*nicht vererbbar*/
+}
+
+#msg_rec_div.tiny{
+    width: 20px;
+    height: 9px;
+    bottom: 10px;
+}
+
+#msg_rec_icon {
+	position: fixed;
+	left: 40px;
+	z-index: 100;
+	bottom: 10px;
+}
+
+#msg_shnapshot_icon {
+    position: fixed;
+    left: 20px;
+    z-index: 100;
+    bottom: 10px;
+	color: gray;
+}
+
+#msg_shnapshot_icon:hover {
+	color: red;
+}
+
+#msg_notification_div {
+    font-family: Verdana;
+    font-size: 9px;
+    transition: transform 500ms ease-in-out 0s, opacity 500ms ease-in-out; /*nicht vererbbar*/
+}
+
+.msgNew {
+    color: green !important;
+    font-weight: bold;
+    transition: transform 500ms ease-in-out 0s, opacity 500ms ease-in-out; /*nicht vererbbar*/
+}
+
+.msgOutdated{
+    color: red;
+    transition: transform 500ms ease-in-out 0s, opacity 500ms ease-in-out; /*nicht vererbbar*/
+}
+
+
+.msg_error{
+    color: red;
+    font-weight: bold;
+    transition: transform 500ms ease-in-out 0s, opacity 500ms ease-in-out; /*nicht vererbbar*/
+    z-index: 2000;
+}
+
+.msg_warn{
+    color: orange;
+    font-weight: bold;
+    transition: transform 500ms ease-in-out 0s, opacity 500ms ease-in-out; /*nicht vererbbar*/
+}
+
+
+.msg_info {
+    transition: transform 500ms ease-in-out 0s, opacity 500ms ease-in-out; /*nicht vererbbar*/
+}
+
+.msg_important {
+    color: green;
+    transition: transform 500ms ease-in-out 0s, opacity 500ms ease-in-out; /*nicht vererbbar*/
+}
+
+.context {
+    font-family: Verdana;
+    font-size: 9px;
+    transition: transform 500ms ease-in-out 0s, opacity 500ms ease-in-out;
+}
+
+
+/*
+
+
+*/
+
+.fa-sync , .fa-file , .fa-code, .fa-eye.context-icon
+{
+  color: lightblue;
+  font-size: 12px;
+}
+
+.context-icon .icon-inactiv
+{
+  color: lightgray;
+  font-size: 12px;
+}
+
+.context-icon.autoMode{
+    color: green;
+}
+
+.fa-sync:hover, .fa-file:hover , .fa-code:hover, , .fa-eye.context-icon:hover
+{
+  color: blue;
+}
+{
+  color: black;
+  font-size: 14px;
+}
+
+/*
+
+ tooltip
+
+*/
+
+.tooltip-container {
+  display: none;
+  position: absolute;
+  padding: 5px;
+  background-color: #f1f1f1;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  z-index: 10950;
+}
+
+.tooltip {
+  position: relative;
+  display: inline-block;
+  border-bottom: 1px dotted black;
+}
+
+.tooltip-container .tooltip-text {
+  visibility: hidden;
+  width: 120px;
+  background-color: #555;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px 0;
+  position: absolute;
+  z-index: 1;
+  bottom: 125%;
+  left: 50%;
+  margin-left: -60px;
+  opacity: 0;
+  transition: opacity 0.5s;
+}
+
+.tooltip-container .tooltip-text {
+  z-index: 10999;
+}
+
+
+.tooltip-container .tooltip-text::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: #555 transparent transparent transparent;
+}
+
+/*
+
+  values
+
+*/
+
+a:link {
+  text-decoration: none;
+}
+a:visited {
+  text-decoration: none;
+}
+a:hover {
+  text-decoration: none;
+}
+a:active {
+  text-decoration: none;
+}
+
+.stmt {
+  font-family: Verdana;
+  font-size: 9px;
+}
+
+.hidden {
+  display: none !important;
+}
+
+/*
+
+    Codemirror Patches ..
+
+*/
+
+.CodeMirror-sizer {
+    padding-bottom: 4px !important;
+}
+
+.CodeMirror-hscrollbar {
+    height: 4px;
+}
+
+
+
+/*
+   scroll
+*/
+
+.grid-with-filter {
+    overflow-y: hidden;
+}
+
+.grid-with-filter-scroll ,  .grid-with-filter-scroll:hover {
+    border-bottom: 5px solid;
+    padding-bottom: 5px;
+}
+.grid-with-filter-scroll-LOAD , .grid-with-filter-scroll-LOAD:hover {
+    border-bottom: 5px solid green;
+    padding-bottom: 5px;
+
+}

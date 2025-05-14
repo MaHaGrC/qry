@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html xmlns:>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width">
+  <title>qry</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+  <script src="commit.properties.js"></script>
+
+<!--  need to export and import ... mermaid.rub
+  <script type="module">
+    import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+    mermaid.initialize({ startOnLoad: false });
+  </script>
+-->
+<!--  <script src="https://cdn.jsdelivr.net/npm/mermaid@9/dist/mermaid.js"></script>    mermaid.render is not a function -->
+<!--
+  <script type="module">
+    import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+    mermaid.initialize({ startOnLoad: false });
+    export { run, render, parse, parseDirective, parseDirective, render, renderToSvg, renderToCanvas, renderToSvg, renderToCanvas, renderToImg, renderToImgMap };
+  </script>
+
+  <script type="module">
+    import mermaid from './mermaid.esm.mjs';
+    let config = { startOnLoad: true, flowchart: { useMaxWidth: false, htmlLabels: true } };
+    mermaid.initialize(config);
+  </script>
+  <script src="mermaid.min.10.9.1.js"></script>
+  <script src="mermaid_9.4.3.js"> /*no source map*/ </script>
+  <script src="mermaid.min.9.3.4.js"> /*no source map*/ </script>
+-->
+
+
+
+
+  <!-- https://codemirror.net/5/doc/manual.html -->
+  <!--
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.13.4/codemirror.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.13.4/codemirror.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.13.4/mode/javascript/javascript.js"></script>
+  -->
+  <!-- local -->
+  <script src="codemirror-5.65.13/lib/codemirror.js"></script>
+  <link rel="stylesheet" href="codemirror-5.65.13/lib/codemirror.css">
+  <!-- hint / autocomplete -->
+  <link rel="stylesheet" href="codemirror-5.65.13/addon/hint/show-hint.css">
+  <script src="codemirror-5.65.13/addon/hint/show-hint.js"></script>
+  <script src="codemirror-5.65.13/addon/hint/css-hint.js"></script>
+  <!-- autocomplete   mode: javascript -->
+  <!--
+  <script src="codemirror-5.65.13/addon/hint/javascript-hint.js"></script>
+  <script src="codemirror-5.65.13/mode/javascript/javascript.js"></script>
+  <script src="codemirror-5.65.13/mode/markdown/markdown.js"></script>
+  -->
+  <!-- autocomplete   mode: sql -->
+  <script src="codemirror-5.65.13/addon/hint/sql-hint.js"></script>
+  <script src="codemirror-5.65.13/mode/sql/sql.js"></script> <!-- match codemirror-mode ... -->
+  <script src="codemirror-5.65.13/addon/mode/simple.js"></script>
+  <!-- -->
+  <link href="style.css" rel="stylesheet" type="text/css" />
+</head>
+
+<body onkeyup="if (event.key === 'Escape') {if (contextMenuCircular_on) contextMenuCircularClose(); else createContextMenu4Event(event); };" >
+<div style="float: right; color: lightgrey; font-size: small; padding-right: 50px">
+  V: <script javascript>document.write(commit_properties);</script>
+</div>
+<!--
+  <div id="mermaid_div" class="draggable resizable " style="display: block; left: 50px; top: 50px;width: 50%;height: 50%;">
+    <div class="dragHandle  dragHandleFix"  > </div>
+    <pre id="mermaidID" class="mermaid  draggable resizable " style="display: block" >
+    graph LR
+        A --- B
+        B--C[fa:fa-ban forbidden]
+        B--D(fa:fa-spinner);
+    </pre>
+  </div>
+-->
+<!--
+  <script >
+    // import mermaid from 'mermaid.min.10.9.1.js';
+    console.warn("line 70");
+    function updateMermaid() {
+      var mermaidID = document.getElementById('mermaidID');
+      mermaid.render('mermaidID', mermaidID.innerHTML, (svg, bindFunctions) => {
+        let elem = document.getElementById("mermaidID");
+        elem.innerHTML = svg;
+        if (bindFunctions) {
+          bindFunctions(elem);
+        }
+      })
+    }
+    mermaid.init();
+  </script>
+-->
+
+  <div class="container">
+
+
+
+    <div id="cdm_hint_auto_sug" class="cdm_hint_auto_sug CodeMirror CodeMirror-line "  style="z-index: 2000; position: absolute;"></div>
+    <div id="js_tooltip" class="js-tooltip tooltip-container tooltip-text"></div>
+    <input id = "clipboardDummy" type="text" value="Hello World"  style="display: none">
+    <input id = "inputDummy" type="text" value="" onkeyup="handleMenuActive(event || window.event);" oninput="handleMenuFilter(null)" onchange="execMenuFiltered();" style="display: none; z-index: 10001;"> <!-- for input - to get value in menu-mode to filter options -->
+
+    <div id="dropbox" style="float:right; margin: 10px;  display: none">DropZone</div>
+    <div id="dragSource" draggable="true" style="display: none" >dragSource => drag this</div>
+    <!-- cant center to !!!  -->
+    <div id="overlay" style="height: 100%;width: 100%;display: -ms-flexbox;display: -webkit-flex;display: flex;">
+      <div id="dropbox2" style="display: none; z-index: 1000; position: absolute;top: 300px;left: 50%;transform: translate(-50%, -50%); background: white; margin: auto; border: 1px solid lightblue;border-radius: 5px;padding: 100px; padding-right: 150px;"><i class="fa fa-plus fa-5x"></i></div>
+    </div>
+
+
+
+
+    <script  type="text/javascript">var dragHandleFix=1;</script>
+
+    <script  type="text/javascript">
+      //var dropbox = document.getElementById('dropbox');
+      var dropbox = document.querySelector("body");
+
+      dropbox.addEventListener('dragenter', noopHandler_dragenter, false);
+      dropbox.addEventListener('dragexit', noopHandler_dragexit, false);
+      dropbox.addEventListener('dragover', noopHandler_dragover, false);
+      dropbox.addEventListener('drop', drop, false);
+      dropbox.addEventListener('paste', handlePaste, false);
+
+      function noopHandler(evt, name = "noopHandler") {
+          evt.stopPropagation();
+          evt.preventDefault();
+          console.debug(name + ":" + evt);
+          toggle( document.body,"dragOver #dropbox2 display", !name.includes("exit"));
+          if ("noopHandler_dragenter"==name) {
+
+          }
+      }
+
+      function noopHandler_dragenter(evt) {noopHandler(evt, "noopHandler_dragenter");}
+      function noopHandler_dragexit(evt) {noopHandler(evt, "noopHandler_dragexit");}
+      function noopHandler_dragover(evt) {noopHandler(evt, "noopHandler_dragover");}
+
+
+
+      function handlePaste(evt) {
+          if (evt && evt.target && evt.target.tagName && ("INPUT"==evt.target.tagName || "TEXTAREA"==evt.target.tagName)){
+            return; // allow copy paste into input
+          }
+          evt && evt.stopPropagation();
+          evt && evt.preventDefault();
+          console.log('noopHandler_handlePaste');
+          const clipboardData = ( evt ? evt.clipboardData : null ) || window.clipboardData;
+          if (clipboardData) {
+            if (findGrid(evt)) {
+              console.debug('handlePaste - SKIPP (assume copy & paste into grid)');
+            } else if (evt && evt.target && evt.target.type && 'input textarea'.includes(evt.target.type))  {
+              console.debug('handlePaste - SKIPP (input)');
+            } else {
+              const pastedData = clipboardData.getData('text/plain');
+              uploadData( pastedData );
+            }
+          } else {
+            msg_warn('not clipboard data - try ctrl+v, drag with mouse ..')
+          }
+      }
+
+
+      /*catches drag from host ... */
+
+      var droppedFiles = null; // as we cant set it in form right away
+
+      function drop(evt) {
+          evt.stopPropagation();
+          evt.preventDefault();
+            for (let type of event.dataTransfer.types) {
+              console.log({ type, data: event.dataTransfer.getData(type) });
+            }
+          toggle( document.body,"dragOver #dropbox2 display", false);
+          console.debug(evt);
+          var files = evt.dataTransfer.files;
+          if (files && files.length > 0) { // drop file from host ... -> upload files and open grid for it ...
+            // it is not allowed by browsers to set files to upload ...
+            droppedFiles = files;
+            uploadFiles( droppedFiles );
+            // document.getElementById('form_upload').submit();
+          } else {
+            var uri = evt.dataTransfer.getData('text/uri-list');
+            var data = evt.dataTransfer.getData('text/plain') ?? evt.dataTransfer.getData('Text');
+            var qry = evt.dataTransfer.getData('text/qry');
+            var query = qry ?? decodeURIComponent(uri.replace("http://localhost:8080/?qry=",""));
+            // remove session ... as we want to keep all others..
+            // {"session":"drag","grids":[{"qry":"article","prop":{"colOrderIdx":[1,2,3,4,5,8,9,10,11,12,14]}}]}
+            // query = query.replace('{"session":"drag","grids":[','').replaceAll(/\]\}$/g,'');
+            //
+            if (query){
+              console.warn(query);
+              let query_json = JSON.parse(query);
+              let dropped_grid = query_json.grids ? query_json.grids[0] : query_json; // if multiple grids - take first ... assume only one ...
+              var grid = createGridContainer(dropped_grid.qry, dropped_grid.prop);
+              // move to cursor - pos
+              [ grid.eGridBox.style.left, grid.eGridBox.style.top ] = [ evt.clientX, evt.clientY ];
+              alignPosElem( grid.eGridBox );
+            } else {
+              uploadData(data); // might be dragDrop with mouse from Excel-Cells ...
+            }
+          } // file or grid ...
+      }
+
+
+      /* make it dragable*/
+
+      document.querySelector('#dragSource')
+        .addEventListener('dragstart', (event) => {
+          event.dataTransfer.setData('text/plain', 'Foo bar');
+          event.dataTransfer.setData('text/html', '<h1>Foo bar</h1>');
+          event.dataTransfer.setData('text/uri-list', 'https://example.com');
+        });
+
+      function dragSourceHandler(event, format = null) {
+            // create session ... to drag ...  see GRID:NEWTAB:
+            console.log("dragSourceHandler");
+            var grid = findGrid(event.target);
+            var qry = grid2qry( grid );
+            if (qry) {
+                let sessGrids = [];
+                let sess = {};
+                //delete qry.prop.pos ; // remove position if only one grid - but keep it if multiple grids inside ...
+                sessGrids.push(qry);
+                sess.session = "drag";
+                sess.grids = sessGrids;
+                let qry_ = JSON.stringify(sess);
+                console.log("dragSourceHandler qry ->  " + JSON.stringify(qry));
+                console.log("dragSourceHandler uri ->  " + qry_);
+                //
+                // event.dataTransfer.setData('text/plain', JSON.stringify(qry)); // session ...
+                if ("json" == format || event.target.classList.contains("dragSourceJson")){
+                  event.dataTransfer.setData('text/plain', grid.getVisibleDataJson()); // notepad ...  Json
+                  event.dataTransfer.setData('text/html', grid.eGrid.outerHTML); // word ...
+                } else if ("txt" == format || event.target.classList.contains("fa-envelope-open-text")){
+                  event.dataTransfer.setData('text/plain', grid.getVisibleDataTxt()); // notepad ...  TXT
+                  event.dataTransfer.setData('text/html', grid.eGrid.outerHTML); // word ...
+                } else {
+                  event.dataTransfer.setData('text/plain', grid.getVisibleData()); // notepad ...  csv
+                  var d = grid.getVisibleData();
+                  d = "<table><tr><td>" + d.replaceAll("(?<!\\);","</td><td>").replaceAll("\r\n","</tr><tr>") + "</tr></table>";
+                  event.dataTransfer.setData('text/html', d ); // word ...
+                }
+                //event.dataTransfer.setData('text/html', grid.eGrid.innerHTML); // word ...
+                //
+                //event.dataTransfer.setData('text/html', grid.getVisibleData());
+                event.dataTransfer.setData('text/uri-list', "http://localhost:8080/?qry=" + encodeURIComponent(qry_)); // when placed outside dropZone ..
+                event.dataTransfer.setData('text/qry', JSON.stringify(qry)); // qry 2 qry
+            }
+      }
+
+      function dragSourceHandlerEnd(event, format = null) {
+            console.log("dragSourceHandlerEnd");
+            var grid = findGrid(event.target);
+            if (false) {
+              // only if exported to other grid .... unable to check this ...
+              grid.eGridBox.remove();
+              grids[grid.gridNo] = null;
+              removeTooltipForce(); // make sure it is hidden ...
+            }
+      }
+
+      function dragSourceListenerUpdate() {
+        document.querySelectorAll('.dragSource')
+          .forEach( dragSourceTrigger => {
+              dragSourceTrigger.addEventListener('dragstart', (event) => { dragSourceHandler(event); });
+              dragSourceTrigger.addEventListener('dragend', (event) => { dragSourceHandlerEnd(event); });
+            }
+          ); // forEach
+
+      }
+
+
+      /*
+       Scrolling ...
+      */
+      var lastScrollLeft = 0;
+      var lastScrollTop = 0;
+      var lastScrollTop_count = 0;
+      var lastScrollTop_elem = null;
+
+      function onScrollReset(lst_elem, lst_count){
+        if (lastScrollTop_count <= lst_count) {
+          lastScrollTop_count=0;
+          lastScrollTop = 0;
+          var grid = findGrid( lst_elem );
+          if (grid) {
+            toggle( grid.eGridBox, '-grid-with-filter-scroll -grid-with-filter-scroll-LOAD');
+          }
+        }
+      }
+
+      function onScroll(e){
+        var elem = e.target;
+        if (!lastScrollTop_elem || !elem || (lastScrollTop_elem.id ?? '-') != (elem.id ?? '--')) {
+          lastScrollLeft = elem ? elem.scrollLeft : 0;
+          lastScrollTop = elem ? elem.scrollTop : 0;
+          lastScrollTop_count = 0;
+          lastScrollTop_elem = elem;
+          lastScrollTop_bounce = 0;
+        }
+        if (elem) {
+          if (elem.scrollLeft != lastScrollLeft) {
+            lastScrollLeft = elem.scrollLeft;
+            return; // horizontal scroll
+          }
+          if (elem.scrollTop < lastScrollTop || lastScrollTop_bounce > 0) {
+            lastScrollTop = elem ? elem.scrollTop : 0;
+            return; // upscroll
+          }
+          lastScrollTop = elem.scrollTop <= 0 ? 0 : elem.scrollTop;
+          if (elem.scrollTop + elem.offsetHeight>= elem.scrollHeight ){
+              lastScrollTop_count += 1;
+              lastScrollTop_bounce += 1;
+              var grid = findGrid( elem );
+              console.log("index.html::onScroll - SCROLL_END ("+ lastScrollTop_count +") for " + grid.gridNo);
+              setTimeout( onScrollReset.bind(this, elem, lastScrollTop_count), 5000); // reset after 5 sec ...
+              setTimeout( function(){lastScrollTop_bounce = 0}, 250); // ignore bounce ...
+              if (lastScrollTop_count > 3) {
+                toggle( grid.eGridBox, '+grid-with-filter-scroll-LOAD');
+                lastScrollTop_count = 0;
+                controller( null, "SCROLL_END:", elem); // it is called "permanently", even just on step in-out of grid ...
+              } else if (lastScrollTop_count > 1) {
+                if (lastScrollTop_count > 1) {
+                  msg_info("repeat scroll-down 3 times to load");
+                }
+                toggle( grid.eGridBox, '+grid-with-filter-scroll');
+              }
+          } // end of scroll
+        }
+      }
+
+
+
+
+    </script>
+
+    <div id="grid_container" class="container" style="position: absolute;top: 0px">
+
+      <div id="grid_tmpl" class="grid-with-filter draggable resizable" style="display: none; top: 50px;left: 30%;"  >
+        <div class="dragHandle  dragHandleFix"  >
+          <i class="dragHandleBtn bntClose fas fa-dolly dragSource"                   style="font-size:15px;float: left;padding-left: 10px;margin-top: -9px; cursor: -webkit-grab; cursor: grab;" draggable="true" data-tooltip="drag'n drop deta to word, notepad, or other qry .."></i>
+          <i class="dragHandleBtn bntClose fas fa-envelope-open-text dragSource"      style="font-size:15px;float: left;padding-left: 10px;margin-top: -9px; cursor: -webkit-grab; cursor: grab;" draggable="true" data-tooltip="drag'n drop date as TXT-Table"></i>
+          <div class="dragHandleBtn bntClose dragSource dragSourceJson  "      style="float: left;padding-left: 5px;font-weight: bold;margin-top: -11px;font-size:15px;float: left;cursor: -webkit-grab; cursor: grab;" draggable="true" data-tooltip="drag'n drop date as json/boMerge">{j}</div>
+          <!-- -->
+          <div class="dragHandleBtn bntClose grid-name" data-tooltip="click to remove name" style="float: left;padding-left: 50px;margin-top: -11px;font-size:15px;" onclick="controller(this.parentNode.parentNode,'GRID:NAME:');return false;"></div>
+          <!-- -->
+          <i class="dragHandleBtn bntClose fa fa-window-close"           style="font-size:15px;float: right;margin-top: -9px;padding-right: 10px"  data-tooltip="close grid"   onclick="controller(this.parentNode.parentNode,'CLOSE:');return false;"></i>
+          <i class="dragHandleBtn bntClose fas fa-external-link-alt"     style="font-size:15px;float: right;margin-top: -9px;margin-right: -5px" data-tooltip="open as popup window"  onclick="controller(this.parentNode.parentNode,'GRID:NEWTAB:');return false"></i>
+          <i class="dragHandleBtn bntClose fa fa-keyboard"               style="font-size:15px;float: right;margin-top: -9px;padding-right: 10px"  data-tooltip="hide input"   onclick="getUrl2GridAndHint(this,'cdm','::toggle',false) ; return false"></i>
+          <i class="dragHandleBtn bntClose fas fa-grip-lines"            style="font-size:15px;float: right;margin-top: -9px;padding-right: 5px"  data-tooltip="pin handle (ctrl - apply for all new too)" onclick="elem=toggle(this.parentNode,'dragHandleFix');removeTooltipForce();if (event.ctrlKey) dragHandleFix=elem.classList.includes(dragHandleFix);return false;"></i>
+        </div>
+        <div  class="contextAndCM"  style="clear: both;">
+        <div  class="context"  style=" width: 47px; color: lightblue;  float: left;margin-top: 5px;margin-right: 5px">
+          <div  class="context_env" onclick="controller(findGrid(this),'MENU:','LOGINS UPDATE',null,event);" ></div>
+          <div  class="context_date" onclick="controller(findGrid(this),'MENU:','CACHE UPDATE ' + findGrid(this).codeMirror.getValue(),null,event);"></div>
+          <div  class="context_version" style="display: none"></div>
+        </div>
+        <div  class="codeMirrorAnker"  style="flex: 1; margin-left: 4px; width: 20px;padding-left: 20px;"> <!-- width: 20px to ensure place left and right -->
+        </div>
+        <div  class="contextRight"  style="width: 50px; margin-top: 5px;margin-left: 5px">
+          <!-- TODO general method to get current grid - assume if click on grid   -->
+          <i class="fa fa-sync context-icon" aria-hidden="true" onclick="if (event && event.shiftKey) { controller( findGrid( this ),'REFRESH:'); return false; } ; if (event && event.ctrlKey) { toggle(this, 'autoMode')}; let autoMode = this.classList.contains('autoMode'); if (autoMode) { let x = this; setTimeout(function() {x.onclick(null);}, 10000);  };  if (autoMode || (event && !event.ctrlKey))controller( findGrid( this ),'UPDATE:');" data-tooltip="Update Data <br> (ctrl - every 10 sec) <br> (shift - refresh GUI)" ></i>
+          <script type="text/javascript">
+              function clone2Clipboard( eStmt ){
+                var clibd=document.getElementById('clipboardDummy');
+                clibd.value=eStmt.innerHTML ?? eStmt;
+                clibd.select();
+                clibd.setSelectionRange(0, 99999);
+                navigator.clipboard.writeText(clibd.value);
+                msg_info('Statement copied');
+              }
+          </script> <!-- ;toggle(eStmt)       eStmt.classList.toggle('hidden')    eStmt.style.display='none';  - - >   changing style trigger resize ... -->
+
+          <i id="colWidth_icon" class="fa fa-eye tooltip context-icon"  aria-hidden="true"  onclick="event.preventDefault();event.stopPropagation();grid=findGrid( this );grid.toggleColsDetail(!event.shiftKey);grid.load(0,0)" data-tooltip="toggle column with / use shift to toggle columns"></i>
+          <i id="stmt_icon" class="fa fa-code tooltip context-icon"  aria-hidden="true"  onclick="event.preventDefault();event.stopPropagation();eStmt=this.parentNode.parentNode.parentNode.getElementsByClassName('stmt')[0];toggle(eStmt);clone2Clipboard(eStmt)" data-tooltip="show executed code (e.g.SQL) (available after refresh)"></i>
+        </div>
+      </div>
+      <div class="stmt hidden" style="color: lightblue;" onclick=' navigator.clipboard.writeText(this.innerHTML);msg_info("copied to clipboard");'  ></div>
+      <div  class="grid-container resizable"  onscroll="onScroll(event);" style="clear: both;">
+      </div>
+      <div class="scrollOnButton" style="float: right;bottom: 5px;position: absolute;right: 15px;" onclick="controller( null, 'SCROLL_END:', event);"  data-tooltip="add further data <br> ctrl for refresh" >...</div>
+    </div>
+    </div>
+
+    <!-- https://itnext.io/how-to-create-a-custom-right-click-menu-with-javascript-9c368bb58724 -->
+    <div id="menu" style="display: none;">
+      <div id="context-menu0">
+        <div class="item">Option 1</div>
+        <div class="item" onclick="alert('asdad');">Option 2</div>
+        <div class="item">Option 3</div>
+        <div class="item">Option 4</div>
+        <div class="item">Option 5</div>
+      </div>
+    </div>
+
+    <div id="resizeFrame" style="display: none">
+      <div id="resizeFrameContent" style="position: absolute;width: 100%;margin: auto;text-align: center;top: 0px;">
+        0, 0 <br> 0, 0
+      </div>
+    </div>
+    <div id="resizeFramePure" style="position:absolute; display: none;z-index: 99999; border: 1px dotted #10b8ee;border-radius: 5px;padding: 10px; background: white">  </div>
+
+    <div id="context-menu">
+      <ul id="myUL">
+      </ul>
+    </div>
+
+    <div id="context-menu-circular">
+    </div>
+
+
+    <div id="input-container">
+    </div>
+
+
+
+    <div id="menuBackground" style="display: none; content: '';  position: fixed;  top: 0; left: 0;  height: 100vh;  width: 100vw;  background-color: white;  opacity: 0.9; z-index: 900"></div>
+
+
+    <div id="login" style="display: none;" >
+      <form method="post" action="/login" onsubmit="console.log('login.onsubmit');loginSend(this);return false;" >
+        <script type="text/javascript">
+
+          loginId_current = "Bau_VM";
+          loginId_refresh = 0;
+
+          async function loginSend(formElem){
+            console.debug("loginSend: ... ");
+            url = new URL(formElem.action);
+            loginId_current = document.getElementById("loginId").value ?? "?";
+            url.searchParams.append("login", document.getElementById("loginId").value);
+            url.searchParams.append("url", document.getElementById("loginUrl").value);
+            console.debug("call: " + url.href);
+            url.searchParams.append("userPwd", document.getElementById("userPwd").value);
+            try{
+                let response = await fetch(url);
+                console.debug(response);
+                let text = response.ok ? await response.text() : response.statusText;
+                if (response.ok && text.match(/^OK /)) {
+                  document.getElementById("loginResponse").innerHTML = " "; // clear left overs ..
+                  document.getElementById("login").style.display = 'none';
+                  log("login: " + text);
+                  loginUpdate();
+                } else {
+                  document.getElementById("loginResponse").innerHTML = " " + response.status + " " + text;
+                }
+            } catch (e) {
+             log('!!! Connection fail !!' + url.href);
+             console.error(e);
+            }
+            return false;
+          }
+
+          function loginUpdate(){
+            console.debug("loginUpdate: ... ");
+            document.getElementById("loginUrl").value
+              = ( ""
+                + document.getElementById("loginId").value + "::"
+                + document.getElementById("loginScheme").value + "://"
+                + document.getElementById("loginUser").value + "@"
+                + document.getElementById("loginHost").value + ":"
+                + document.getElementById("loginPort").value
+                ).replace("^[:/@]+$","");
+            if (loginId_refresh > 0) {
+              loginId_refresh = 0;
+              // update all grids ...
+              for( i in grids) {
+                  console.log("loginUpdate: " + i + " -> " + document.getElementById("loginId").value);
+                  let grid = grids [i];
+                  if (grid) {
+
+                      // controller(grid, 'LOGIN:' + document.getElementById("loginId").value);
+                      controller(grid,  (loginId_refresh > 1 ? 'LOGIN:UPDATE:' : 'LOGIN:') + document.getElementById("loginId").value);
+                  }
+              }
+            } else if (loginId_refresh < 0) {
+                // assume most recent grid -> selected new ENV -> Server respondend Login-Hint -> Login processed -> now update grid ...
+                // update current grid ...
+                let grid_current = contextMenuCircular.event_grid ;
+                if (grid_current) {
+                  controller(grid_current, 'LOGIN:UPDATE:' + document.getElementById("loginId").value);
+                }
+            }
+          }
+
+
+        </script>
+        <div style="width: 100%">
+            <h1 >Login<i id="LoginCloseButton"  class="fa fa-window-close bntClose" onclick="document.getElementById('loginResponse').innerHTML='';document.getElementById('login').style.display = 'none'; "></i></h1>
+          </div>
+          <p>
+            <input id="loginId" type="text" name="loginId" value="" placeholder="Login | <3char-project>_[VM|INTEG|LIVE]" required oninput="loginUpdate();">
+            <div id="LoginExpand"> Hint: use [project]_[VM|INTEG|POC|LIVE] with Keypass-Password  <div class="fa fa-expand bntClose" style="float:right;padding-left:30px" onclick="document.getElementById('loginDetails').style.display='block';document.getElementById('loginUrl').style.display='block';document.getElementById('LoginColapse').style.display='block';document.getElementById('LoginExpand').style.display='none';"></div></div>
+            <div id="LoginColapse" style="display: none "> Hint: colapse to use Credentials from Keypass  <div class="fa fa-compress bntClose" style="float:right" onclick="document.getElementById('loginDetails').style.display='none';document.getElementById('loginUrl').style.display='none';document.getElementById('LoginColapse').style.display='none';document.getElementById('LoginExpand').style.display='block';"></div></div>
+          </p>
+          <p id="loginDetails" style="display: none" >
+            <input id="loginScheme" type="text" name="scheme" value="" placeholder="scheme" oninput="loginUpdate();">
+            <input id="loginUser" type="text" name="ser" value="" placeholder="user" oninput="loginUpdate();"> <!-- !!! must not name user  or FireFox will use this as User-->
+            <input id="loginHost" type="text" name="host" value="" placeholder="host" oninput="loginUpdate();">
+            <input id="loginPort" type="text" name="port" value="" placeholder="port" oninput="loginUpdate();">
+          </p>
+          <p><input id="loginUrl" type="text" name="url" size="100" value="" placeholder="URL scheme://usr:pwd@host:port/path" required  style="display: none" ></p>
+          <p>
+              <input id="userPwd" type="password" name="userPwd" value="" placeholder="Password" required>
+              <div id="loginResponse"></div>
+          </p>
+          <div>
+            <p class="submit" style="float:left; margin-left: 20px" ><input type="submit" name="commit" value="Login" onclick="loginId_refresh=-1;"></p>
+            <p class="submit" style="float:left; margin-left: 20px" ><input type="submit" name="commitAll" value="Login ALL" onclick="loginId_refresh=1;"></p>
+            <p class="submit" style="float:left; margin-left: 20px" ><input type="submit" name="commitAllUpd" value="Login ALL and UPDATE" onclick="loginId_refresh=2;"></p>
+          </div>
+        </form>
+    </div>
+
+
+
+    <!---------- TOP -------->
+
+    <div id="msg_notification_div" class="" onclick="toggle('log_div 5000 #log_div_open');" style="position: absolute;left: 50px;top: 5px;display: block">
+      <div id="msg_notification">
+      </div>
+    </div>
+
+    <!-- https://www.freecodecamp.org/news/upload-files-with-javascript/ -->
+    <iframe name="dummyframe" id="dummyframe" style="display: none;"></iframe>
+    <form  id="form_upload" action="/upload" method="post" target="dummyframe" enctype="multipart/form-data" style="float: right; padding: 5px 50px;display: none"> <!-- display by action-menu -->
+      <label for="file">File</label>
+      <input id="file" name="file" type="file" />
+      <button>Upload</button>
+    </form>
+
+    <!---------- BOTTOM -------->
+
+
+
+    <i id="msg_shnapshot_icon" class="fa fa-camera  tooltip  context-icon " style="" aria-hidden="true"  onclick="recordSnapshot();" data-tooltip="snapshot (incl. last action)"></i>
+    <i id="msg_rec_icon" class="fa fa-video  tooltip  context-icon " style="color: orange" aria-hidden="true"  onclick="recordToggle(event);" data-tooltip="recording <div style='color:gray;float: right'>&nbsp;off&nbsp;</div> <div style='color:orange;float: right'>&nbsp;to screen&nbsp;</div> <div style='color:red;float: right'>&nbsp;db&nbsp;</div> "></i>
+    <div id="msg_rec_div" class="tiny"  style="" onclick="toggle(this,'tiny')">
+      <div id="msg_rec">
+      </div>
+      <div id="msg_rec_session"></div>
+      <div id="msg_rec_session_old"></div>
+    </div>
+
+    <script src="debugHelper.js"></script>
+    <script src="util.js"></script>
+    <script src="util_toggle.js"></script>
+    <script src="util_css.js"></script>
+    <script src="util_pos.js"></script>
+    <script src="grid.js"></script>
+    <script src="controller.js"></script>
+    <script src="menu.js"></script>
+    <script src="menuCircular.js"></script>
+    <!--<script src="script.js"></script>-->
+    <script src="connect.js"></script>
+    <script src="connect_notifications.js"></script>
+    <script src="event.js"></script>
+    <!--<script src="dragdropresize.js"></script>-->
+    <script src="dragresizediv2.js"></script>
+    <script src="dragresizegridcol.js"></script>
+    <script src="resize.js"></script>
+    <script src="codemirror_wraper.js"></script>
+    <script src="session.js"></script>
+    <script src="initForms.js"></script>
+
+    <!-- <script src="mermaid.js">mermaid.initialize({ startOnLoad: true });</script> -->
+    <!--
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@9/dist/mermaid.js">mermaid.initialize({ startOnLoad: true });</script>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@9.4.2/dist/mermaid.js">mermaid.initialize({ startOnLoad: true });</script>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@9.3.0/dist/mermaid.js">mermaid.initialize({ startOnLoad: true });</script>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.js">mermaid.initialize({ startOnLoad: true });</script>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@9/dist/mermaid.js"></script>
+     -->
+
+
+    <!--
+    <script > console.warn("mermaid init ..."); mermaid.initialize({ startOnLoad: true }); console.warn("mermaid init DONE");</script>
+    <script > console.warn("mermaid init ..."); mermaid.initialize({ startOnLoad: false }); mermaid.run({nodes: document.getElementsByClassName('mermaid')}) ; console.warn("mermaid init DONE"); /*FAIL - Uncaught TypeError: mermaid.run is not a function*/</script>
+    <script > console.warn("mermaid init ..."); mermaid.initialize({ startOnLoad: false }); mermaid.run(); /*FAIL - Uncaught TypeError: mermaid.run is not a function*/</script>
+    <script > console.warn("mermaid init ..."); mermaid.initialize({ startOnLoad: false }); mermaid.init(); /*OK*/</script>
+    <script > console.warn("mermaid init ..."); mermaid.initialize({ startOnLoad: false }); mermaid.init();/*OK - but not vail to grid */</script>
+    <script > console.warn("mermaid init ..."); mermaid.initialize({ startOnLoad: false }); await mermaid.run();/* OK!!! - Uncaught SyntaxError: await is only valid in async functions, async generators and modules */</script>
+
+    <script > console.warn("mermaid init ."); mermaid.initialize({ startOnLoad: false }); console.warn("mermaid init .."); </script>
+    <script > console.warn("mermaid init ."); mermaid.init(); console.warn("mermaid init DONE"); /*OK*/</script>
+
+
+    <script > console.warn("mermaid init ."); mermaid.initialize({ startOnLoad: false }); function mermaid___init(){ mermaid.init() }; console.warn("mermaid init .."); </script>
+    <script > console.warn("mermaid init .");mermaid___init(); console.warn("mermaid init DONE"); /*OK*/</script>
+
+    -->
+<!--  DISABLE by default as it is very expensive ...
+    <script src="mermaid.min.9.3.4.js"> </script>
+-->
+
+    <script src="init.js"></script>
+    <script src="test.js"></script>
+
+<!--
+
+        <script > console.warn("mermaid init ."); mermaid.initialize({ startOnLoad: false });
+        function mermaid___init(){ mermaid.init() };
+        function mermaid___render(id, val, elem){ mermaid.render(id, val, (svg, bindFunctions) => {elem.innerHTML = svg;});};
+        mermaid___init();
+        console.warn("mermaid init DONE"); </script>
+-->
+
+        <!--<script src="https://replit.com/public/js/replit-badge.js" theme="blue" defer>-->
+    </script>
+  </div>
+</body>
+
+</html>

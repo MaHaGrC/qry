@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html><head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <title></title>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta name="robots" content="noindex, nofollow">
+    <meta name="googlebot" content="noindex, nofollow">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!--
+        https://stackoverflow.com/questions/21064101/understanding-offsetwidth-clientwidth-scrollwidth-and-height-respectively
+        https://jsfiddle.net/y8Y32/25/
+    -->
+
+
+
+    <style id="compiled-css" type="text/css">
+        html{font-family:Arial, sans-serif;overflow:hidden}#content,#overlay,#clone{width:180px;height:180px;padding:35px 120px 60px 90px;border:10px solid cyan;border-right-width:25px;border-bottom-width:20px;border-left-width:15px;background:#ffe;overflow:auto;margin-top:105px;margin-left:105px;text-align:justify}#content,#clone{font-size:12px}#clone{position:absolute;top:105px;left:105px;margin:0;opacity:.2;pointer-events:none;border-color:transparent;background:transparent;overflow:visible;width:180px}.nested{width:400px;background:#eee}#overlay{position:absolute;background:transparent;left:0;top:0;overflow:visible;height:0;width:0;padding:0;border-color:transparent}#overlay,#overlay *{pointer-events:none}#overlay div{position:absolute;width:20px;height:20px;overflow:visible}#overlay div[id^="css"]{color:#00c;background:#def;top:-35px;left:-40px}#overlay div[id^="client"]{color:#c00;background:#fcc;top:-60px;left:-65px}#overlay div[id^="scroll"]{color:#080;background:#cfc;top:-85px;left:-90px}#overlay div[id^="offset"]{background:#ccc;top:-110px;left:-115px}#overlay div[id^="padding"]{background:gold;color:saddlebrown}#overlay div:before,#overlay div:after{position:absolute;display:block;z-index:1;height:10000px;width:10000px}#overlay div:before{content:attr(id)}#overlay div:after{content:""}#overlay div[id$="Width"]:before{border-left:1px dashed}#overlay div[id$="Width"]:before,#overlay div#paddingRight:before,#overlay div#paddingLeft:before{width:100%;text-align:center}#overlay div[id$="Width"]:after,#overlay div#paddingRight:after{border-right:1px dashed;right:0}#overlay div#paddingRight:after{top:-25px}#overlay div[id$="Height"]:before{border-top:1px dashed}#overlay div[id$="Height"]:after,#overlay div#paddingBottom:after,#overlay div#paddingTop:after{border-bottom:1px dashed;bottom:0}#overlay div#paddingTop:after{left:-420px;opacity:0;bottom:-1px}#overlay div#paddingTop.scrolled:after{opacity:1}#overlay div#paddingBottom:after{left:-30px}#overlay div#cssWidth{left:90px;width:180px}#overlay div#scrollWidth,#overlay div#clientWidth{left:0}#overlay div#offsetWidth{left:-15px}#overlay div#cssHeight{top:35px;height:180px;text-indent:-2em}#overlay div#scrollHeight,#overlay div#clientHeight{top:0;text-indent:-1.5em}#overlay div#offsetHeight{top:-10px}#overlay div#paddingTop{top:0;height:35px}#overlay div#paddingBottom{top:215px;height:60px}#overlay div#paddingTop,#overlay div#paddingBottom{margin-left:5px;left:415px}#overlay div#paddingLeft{left:0;width:90px}#overlay div#paddingRight{left:270px;width:120px}#overlay div#paddingLeft,#overlay div#paddingRight{margin-top:5px;top:295px}#overlay div#cssHeight{line-height:90px}#overlay div#clientHeight{line-height:250px}#overlay div#scrollHeight,#overlay div#paddingTop{line-height:35px}#overlay div#paddingBottom{line-height:60px}#overlay div#offsetHeight{height:305px;line-height:125px}#overlay div#offsetWidth{width:430px}#overlay:after{content:"Border";position:absolute;top:295px;left:415px;color:#0dd}*{-webkit-transition:opacity 1s ease;transition:opacity 1s ease}
+
+        /* EOS */
+    </style>
+
+    <style type="text/css">
+        :root {
+          color-scheme: light;
+        }
+    </style>
+
+    <script id="insert"></script>
+
+
+</head>
+<body>
+<div id="content">
+    Note how the browser reserves some space to the right of this
+    paragraph, just enough to fit a scrollbar. This happens even though
+    there is a decent amount of padding-right.
+    <div class="nested">
+        Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse
+        molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero
+        eros et accumsan et iusto odio dignissim qui blandit praesent luptatum
+        zzril delenit augue duis dolore te feugait nulla facilisi. Lorem ipsum
+        dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh
+        euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.
+    </div>
+
+    <p>Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam
+        nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat,
+        sed diam voluptua. At vero eos et accusam et justo duo dolores et ea
+        rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem
+        ipsum dolor sit amet.</p>
+
+    <p>Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat. </p>
+
+</div>
+
+<div id="overlay">
+
+    <div id="scrollWidth" style="width: 490px;"></div>
+    <div id="clientWidth" style="width: 373px;"></div>
+    <div id="offsetWidth"></div>
+
+    <div id="scrollHeight" style="height: 515px;"></div>
+    <div id="clientHeight" style="height: 258px;"></div>
+    <div id="offsetHeight"></div>
+
+    <div id="paddingLeft"></div>
+    <div id="paddingRight"></div>
+    <div id="paddingTop"></div>
+    <div id="paddingBottom"></div>
+
+    <div id="cssWidth"></div>
+    <div id="cssHeight"></div>
+
+
+</div>
+
+
+
+<script type="text/javascript">
+
+    console.log("see         https://stackoverflow.com/questions/21064101/understanding-offsetwidth-clientwidth-scrollwidth-and-height-respectively");
+    console.log("            https://jsfiddle.net/y8Y32/25/");
+
+    var div = document.getElementById('content');
+
+    if (window.console && console.clear) console.clear();
+    var scrollbarWidth = div.offsetWidth - div.clientWidth - parseFloat(getComputedStyle(div).borderLeftWidth) - parseFloat(getComputedStyle(div).borderRightWidth);
+    if (window.console) console.log('Scrollbar width (including rounding errors):', scrollbarWidth);
+
+    ['clientWidth', 'scrollWidth', 'clientHeight', 'scrollHeight'].forEach(function (id) {
+        document.getElementById(id).style[id.replace(/^[a-z]+/, '').toLowerCase()] = div[id] + 'px';
+    });
+
+    div.addEventListener('scroll', function (e) {
+        ['paddingTop', 'cssHeight', 'scrollHeight', 'clone'].forEach(function (id) {
+            document.getElementById(id).style.marginTop = -div.scrollTop + 'px'
+        });
+        ['paddingLeft', 'cssWidth', 'scrollWidth', 'clone'].forEach(function (id) {
+            document.getElementById(id).style.marginLeft = -div.scrollLeft + 'px'
+        });
+        document.getElementById('paddingRight').style.opacity = div.scrollLeft ? 0 : 1;
+        document.getElementById('paddingBottom').style.opacity = div.scrollTop ? 0 : 1;
+        document.getElementById('cssHeight').style.opacity = div.scrollTop ? 0 : 1;
+        document.getElementById('paddingTop').classList[div.scrollTop ? 'add' : 'remove']('scrolled');
+    });
+
+    var clone = div.cloneNode(true);
+    clone.id = 'clone';
+    // scrollbar spaing
+    clone.style.width = (div.clientWidth -  parseFloat(getComputedStyle(div).paddingLeft) - parseFloat(getComputedStyle(div).paddingRight)) + 'px';
+    div.parentNode.appendChild(clone);
+
+
+</script><div id="clone" style="width: 163px;">
+    Note how the browser reserves some space to the right of this
+    paragraph, just enough to fit a scrollbar. This happens even though
+    there is a decent amount of padding-right.
+    <div class="nested">
+        Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse
+        molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero
+        eros et accumsan et iusto odio dignissim qui blandit praesent luptatum
+        zzril delenit augue duis dolore te feugait nulla facilisi. Lorem ipsum
+        dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh
+        euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.
+    </div>
+
+    <p>Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam
+        nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat,
+        sed diam voluptua. At vero eos et accusam et justo duo dolores et ea
+        rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem
+        ipsum dolor sit amet.</p>
+
+    <p>Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat. </p>
+
+</div>
+
+<script>
+    // tell the embed parent frame the height of the content
+    if (window.parent && window.parent.parent){
+      window.parent.parent.postMessage(["resultsFrame", {
+        height: document.body.getBoundingClientRect().height,
+        slug: "y8Y32"
+      }], "*")
+    }
+
+    // always overwrite window.name, in case users try to set it manually
+    window.name = "result"
+</script>
+
+<script>
+    const allLines = []
+    const cssElement = document.querySelector("#compiled-css")
+
+    window.addEventListener("message", (message) => {
+        if (message.data.console){
+          let insert = document.querySelector("#insert")
+          allLines.push(message.data.console.payload)
+          insert.innerHTML = allLines.join(";\r")
+
+          let result = eval.call(null, message.data.console.payload)
+          if (result !== undefined){
+            console.log(result)
+          }
+        }
+
+      if (message.data.css){
+        cssElement.textContent = message.data.css.payload
+      }
+
+      if (message.data.html){
+        document.body.innerHTML = message.data.html.payload
+      }
+    })
+</script>
+</body></html>

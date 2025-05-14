@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Resizable and Draggable Div Example</title>
+  <style>
+    #right_panel {
+        position: absolute;
+        width: 96px;
+        padding-left: 4px;
+        top: 50px;
+        height: 100px;
+        left: 100px;
+        background-color: #f0f0ff;
+    }
+
+
+
+    #right_panel__:hover:after {
+        content: '';
+        background-color: #ccc;
+        position: absolute;
+        left: 0;
+        width: 4px;
+        height: 100%;
+        cursor: ew-resize;
+    }
+
+  </style>
+</head>
+<body>
+
+<div id="right_panel"></div>
+</body>
+
+<script>
+  const BORDER_SIZE = 10;
+  const panel = document.getElementById("right_panel");
+
+  let m_x, m_y, m_dir_lr, m_dir_tb; // dir [lr][tb]  l=-x r=+x / b=-y t=+y
+  function resize(e){
+    const dx = m_x - e.x;
+    const dy = m_y - e.y;
+    m_x = e.x;
+    m_y = e.y;
+    if (m_dir_lr < 0 ) panel.style.left = (parseInt(getComputedStyle(panel, '').left) - dx) + "px"; // left
+    if ( m_dir_lr ) panel.style.width = (parseInt(getComputedStyle(panel, '').width) - m_dir_lr * dx) + "px"; // width or left (compensate for left)
+    if (m_dir_tb < 0 ) panel.style.top = (parseInt(getComputedStyle(panel, '').top) - dy) + "px"; // top
+    if ( m_dir_tb ) panel.style.height = (parseInt(getComputedStyle(panel, '').height) - m_dir_tb * dy) + "px"; // bottom or top (compensate for top)
+
+  }
+
+  panel.addEventListener("mousedown", function(e){
+    // idea - touch point liegt immer innen -> d.h. mit pos/negative wert kann zwischen l und r unterschieden werden
+    // annahme: width > BORDER_SIZE
+    let e_target_style = getComputedStyle(e.target, '');
+    m_dir_lr = e.offsetX < BORDER_SIZE ? -1 : parseInt(e_target_style.width) - BORDER_SIZE < e.offsetX ? +1 : 0 ;
+    m_dir_tb = e.offsetY < BORDER_SIZE ? -1 : parseInt(e_target_style.height) - BORDER_SIZE < e.offsetY ? +1 : 0 ;
+    console.log(e.offsetY + "  --  " + (parseInt(e_target_style.height) - e.offsetY)) ;
+    if (0 != m_dir_lr || 0 != m_dir_tb ) {
+      console.log( " -->  start " + (m_dir_lr) + " " + (m_dir_tb));
+      m_x = e.x;
+      m_y = e.y;
+      document.addEventListener("mousemove", resize, false);
+    }
+  }, false);
+
+  document.addEventListener("mouseup", function(){
+      document.removeEventListener("mousemove", resize, false);
+  }, false);
+</script>
+
+</body>
+</html>

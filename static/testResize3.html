@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <style>
+    .box {
+        top: 100px;
+        width: 100px;
+        height: 100px;
+        border: 2px solid #007BFF;
+        position: relative;
+        padding: 10px;
+        box-sizing: border-box;
+        overflow: hidden; /* or it would displace resizer - but unable to scroll */
+        /* hide scrollbar but keep functionality
+          -- but scrolls the fixed resizer out of view
+          -- https://www.w3schools.com/howto/howto_css_hide_scrollbars.asp#:~:text=How%20To%20Hide%20Scrollbars.%20Add%20overflow:
+        overflow: auto;
+        -ms-overflow-style: none;  /* IE and Edge */
+        scrollbar-width: none;  /* Firefox */
+        */
+    }
+
+    .resizable {
+        resize: both; /* Allows resizing */
+    }
+
+    .resizableOnHover:hover {
+        resize: both; /* Allows resizing */
+    }
+
+    /* allow ResizeObserver, Custom-Handle will appear only if hovered at edge  ??? */
+
+    /*
+
+      see https://jsfiddle.net/MM94f/    -- https://stackoverflow.com/questions/16787961/css3-resize-handle-on-div
+                      -- use handle as sibling to resizable element -- as css can address siblings but not parents !!!
+      .pull-tab {
+          height: 0px;
+          width: 0px;
+          border-top: 20px solid cyan;
+          border-left: 20px solid transparent;
+          border-right: 20px solid transparent;
+          -webkit-transform: rotate(-60deg);
+          position: absolute;
+          bottom: 0px;
+          right: -15px;
+          pointer-events: none;
+          z-index: 2;
+      }
+
+    */
+
+
+    .dragger {
+        width: 100%;
+        height: 10px;
+        background: #EBF5FF;
+        position: absolute;
+        top: 0;
+        left: 0;
+        cursor: move;
+        z-index: 1000;
+    }
+
+    .dragger:hover, .dragger.active {
+        background: #007BFF;
+    }
+
+
+    .resizer {
+        width: 10px;
+        height: 10px;
+        /* background: #EBF5FF; */
+        background: transparent;
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        cursor: se-resize;
+        z-index: 1000;
+    }
+
+    .resizerIcon{
+        background: transparent;
+        color: transparent;
+    }
+
+    .resizer.resizerIcon:hover {
+        color: #007BFF;
+        background: transparent;
+        width: auto;
+        height: auto;
+        font-size:48px;
+        rotate: -45deg;
+        transform: translate(-8px,15px);
+    }
+
+
+    .resizer:hover, .resizer.active {
+        background: #007BFF;
+    }
+
+    #rasterElem{
+        position: absolute ;
+        border: black 1px dotted;
+        left: 50px;
+        top: 50px;
+        width: 50px;
+        height: 50px;
+        text-align: center;
+        vertical-align: middle;
+        color: #007BFF;
+        z-index: 1000;
+        display: none;
+        transition: all 100ms ease-out 100ms;
+    }
+
+
+  </style>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Resizable and Draggable Div Example</title>
+</head>
+<body>
+
+<div id="msg">
+</div>
+
+<!-- use resizable to ensure place for resizer while having scrollbars
+        - but enabling resizable - will hide the resizer AND will need observer ...
+-->
+<div class="box " id="draggable" style="position: absolute; left: 200px; top: 200px; width: 400px">
+  <div class="dragger"></div>
+  <p id="boxInfo">Resize me and drag me!</p>
+  <!--<div class="resizer_"></div>-->
+  <i class="resizer resizerIcon fa fa-caret-down " style=""></i>
+</div>
+
+<div class="box resizable" id="draggable2" style="position: absolute; left: 50px; top: 150px;">
+  <div class="dragger dragger2"></div>
+  <p id="boxInfo2">Resizer by Browser!<br><br><br></p>
+  <div class="resizer"></div>
+</div>
+
+<div id="rasterElem" style="" >
+  <div id="rasterElemContent" style="position: absolute;width: 100%;margin: auto;text-align: center;top: 0px;">
+    0, 0 <br> 0, 0
+  </div>
+</div>
+
+
+<script>
+
+  function log(msg,e ) {
+    document.getElementById('msg').innerHTML = msg.replace(/\n/g, '<br>').replace(/ /g, '&nbsp;');
+    document.getElementById('boxInfo').innerHTML += '<br>' +
+        dragResizeElement.style.left + ', ' + dragResizeElement.style.top + ' -- ' +
+        dragResizeElement.style.width + ', ' + dragResizeElement.style.height + ' ' +
+        (e && e.clientX ?
+          "+=" + (e.clientX - dre_mouse_start_x) + ', ' + (e.clientY - dre_mouse_start_y)
+          : '')
+    ;
+  }
+
+  function logData(e) {
+    elem = dragResizeElement;
+    log(
+        'clientXY: ' + ( e && e.clientX ? e.clientX : "" ) + ', ' + ( e && e.clientY ? e.clientY : "" ) + '\n' +
+        // 'pageX: ' + e.pageX + ', ' + e.pageY + '\n' +
+        // 'screenX: ' + e.screenX + ', ' + e.screenY + '\n' +
+        'offsetXY: ' + ( e && e.offsetX ? e.offsetX : "" ) + ', ' + ( e && e.offsetY ? e.offsetY : "" ) + '\n' +
+        'movementXY: ' + ( e && e.movementX ? e.movementX : "" ) + ', ' + ( e && e.movementY ? e.movementY : "" ) + '\n' +
+        'button/buttons: ' + ( e && e.button ? e.button : "" ) + ', ' + ( e && e.buttons ? e.buttons : "" ) + '\n' +
+        'target: ' + ( e && e.target ? e.target.id : "" ) + '\n' +
+        'dragResizeElement: ' + dragResizeElement.id + '\n' +
+        'dre_mouse_start_xy: ' + dre_mouse_start_x + ', ' + dre_mouse_start_y + '\n' +
+        'delta_xy: ' + ( e && e.clientX ? (e.clientX - dre_mouse_start_x) : "") + ', ' + ( e && e.clientY ? (e.clientY - dre_mouse_start_y) : "") + '\n' +
+        'dre_offset_xy: ' + dre_offset_x + ', ' + dre_offset_y + '\n' +
+        'elem.style.width: ' + elem.style.width + ', ' + elem.style.height + '\n' +
+        'elem.style.left: ' + elem.style.left + ', ' + elem.style.top + '\n' +
+        '',e);
+    // there is no good way to center text vertically in a div
+    rasterElemContent.style.top = ( parseInt(rasterElem.style.height)/2 - 30 ) + 'px';
+    rasterElemContent.innerHTML = (parseInt(rasterElem.style.left) + 1) + ' , ' + (parseInt(rasterElem.style.top) + 1) + ' <br> ' + (parseInt(rasterElem.style.width) - 2 ) + ' x ' + (parseInt(rasterElem.style.height) - 2) + ' ' ; // consider border ....
+
+  }
+
+
+  const dragger = document.querySelector('.dragger');
+  const resizer = document.querySelector('.resizer');
+  const dragger2 = document.querySelector('.dragger2');
+  const rasterElem = document.querySelector('#rasterElem');
+  const rasterElemContent = document.querySelector('#rasterElemContent');
+  let dragResizeElement = null;
+  let dragResizeHandle = null;
+  let dre_mouse_start_x, dre_mouse_start_y;
+  let dre_offset_x, dre_offset_y;
+
+
+  function fixPosition(elem) {
+    // create left and top properties
+    //   boundingClientRect does not consider margin !!!
+    if (elem.style.left === '' || elem.style.top === '' || elem.style.width === '' || elem.style.height === '') {
+      if (elem.style.position !== 'absolute') {
+        elem.style.position = 'absolute';
+      }
+      currentStyle = elem.currentStyle || window.getComputedStyle(elem);
+      //
+      elem.style.left = elem.style.left || currentStyle.left || '0px';
+      elem.style.top = elem.style.top || currentStyle.top || '0px';
+      //
+      elem.style.width = elem.style.width || currentStyle.width || elem.getBoundingClientRect().width + 'px';
+      elem.style.height = elem.style.height || currentStyle.height || elem.getBoundingClientRect().height + 'px';
+      //
+      console.log("fixPosition " + elem.id + ": " + elem.style.left + ", " + elem.style.top + ", " + elem.style.width + ", " + elem.style.height);
+    }
+  }
+
+  function initResizeOrDrag(e, drag = false) {
+      e.preventDefault();
+      e.stopPropagation();
+      dragResizeHandle = e.target;
+
+      // case
+      //   - child: drag handle is child of dragged element
+      //   - sibling: drag handle is sibling of dragged element (as this allows using css to address siblings)
+      //   - self: browser handles resize, we use browser created resize handle
+      //
+      dragResizeElement = e.target.parentElement;
+      console.log("mousedown-" + (drag ? "drag" : "resize") + ": " + dragResizeElement.id + " -> " + dragResizeHandle.id);
+
+      dragResizeHandle.classList.add('active');
+      fixPosition(dragResizeElement);
+      dre_mouse_start_x = e.clientX;
+      dre_mouse_start_y = e.clientY;
+
+      dre_offset_x = parseInt( drag ? dragResizeElement.style.left : dragResizeElement.style.width) - e.clientX;
+      dre_offset_y = parseInt( drag ? dragResizeElement.style.top : dragResizeElement.style.height) - e.clientY;
+
+      document.getElementById('boxInfo').innerHTML = '';
+      logData(e);
+
+      window.addEventListener('mousemove', drag ? doDrag : doResize);
+      window.addEventListener('mouseup', stopDragAndResize);
+  }
+
+  function initResize(e) {
+    initResizeOrDrag(e, false);
+  }
+  function initDrag(e) {
+    initResizeOrDrag(e, true);
+  }
+
+  // Resizing functionality
+  dragger.addEventListener('mousedown', initDrag);
+  resizer.addEventListener('mousedown', initResize);
+  dragger2.addEventListener('mousedown', initDrag);
+
+
+
+  function doResize(e) {
+      dragResizeElement.style.width = e.clientX + dre_offset_x + 'px';
+      dragResizeElement.style.height = e.clientY + dre_offset_y + 'px';
+      logData(e);
+      rasterElemTo(dragResizeElement);
+  }
+
+  function doDrag(e) {
+      // expect absolute position
+      // console.log("drag " + dragResizeElement.id + ": " + dragResizeElement.style.left + "-> " + (e.clientX) + " + " + dre_offset_x + " => " + ((e.clientX) + dre_offset_x + 'px'));
+      dragResizeElement.style.left = e.clientX + dre_offset_x + 'px';
+      dragResizeElement.style.top = e.clientY + dre_offset_y + 'px';
+      logData(e);
+      rasterElemTo(dragResizeElement);
+  }
+
+
+  function stopDragAndResize() {
+      console.log("stopDragAndResize   " + ( dragResizeElement ? dragResizeElement.id : "NULL" ));
+      if (dragResizeElement) {
+        resizeObserverDisable(dragResizeElement, true);
+        if (dragResizeHandle) {
+          dragResizeHandle.classList.remove('active');
+        }
+        //
+        setPosAndSize(rasterElem, dragResizeElement);
+        //
+        // console.log("stopDragAndResize  step 2 " + dragResizeElement.id);
+        rasterElemTo(null);
+        // console.log("stopDragAndResize  step 3 " + dragResizeElement.id);
+        window.removeEventListener('mousemove', doDrag);
+        window.removeEventListener('mousemove', doResize);
+        window.removeEventListener('mouseup', stopDragAndResize);
+        //
+        // console.log("stopDragAndResize  step 4 " + dragResizeElement.id);
+        resizeObserverDisable(dragResizeElement, false);
+        dragResizeElement = null;
+      }
+  }
+
+
+  /*
+
+    RASTER
+
+  */
+
+  var rasterTrgtPosLast = ""; // needed for overdose movement
+
+  function setPosAndSize( srcElem, trgElem ) {
+    // resizeObserverDisable(trgElem, true); // prevent resizeObserver-Event
+    trgElem.style.left = srcElem.style.left;
+    trgElem.style.top = srcElem.style.top;
+    trgElem.style.width = srcElem.style.width;
+    trgElem.style.height = srcElem.style.height;
+    // resizeObserverDisable(trgElem, false);
+  }
+
+  function diffPos( elem1, elem2) {
+    return {
+      left: parseInt(elem1.style.left) - parseInt(elem2.style.left),
+      top: parseInt(elem1.style.top) - parseInt(elem2.style.top),
+      width: parseInt(elem1.style.width) - parseInt(elem2.style.width),
+      height: parseInt(elem1.style.height) - parseInt(elem2.style.height)
+    };
+  }
+
+  function rasterPx( px, pxLast , borderWidth = 0) {
+    var diff = (pxLast ? pxLast - px : 0);
+    var pxNew = rasterPos(  pxLast &&  Math.abs(diff) > 12 ? px <= pxLast ? px : px + 24 - 6 : px + 12 , borderWidth ) + 'px';
+    // console.log("rasterPx: " + px + " -> " + pxLast + " && " + Math.abs(diff) + " > 12 ? " + px + " <= " + pxLast + " ? " + px + " : " + (px + 24 - 6) + " : " + (px + 12) + " == " + ( pxLast &&  Math.abs(diff) > 12 ? px <= pxLast ? px : px + 24 - 6 : px + 12) + ", " + borderWidth + " ) == " + pxNew);
+    return pxNew;
+  }
+
+  function rasterPos( i , borderWidth = 0) {
+    var borderGap = borderWidth / 2  - Math.abs( borderWidth  ) * 5 /*gap*/;
+    i = i - borderGap;
+    return i - (i % 50) + borderGap;
+  }
+
+  function rasterElemTo( elem ) {
+    if (null == elem) {
+      // console.log("rasterElemTo: step 3a -- display none");
+      rasterElem.style.display = 'none';
+      //console.log("rasterElemTo: step 3b -- null");
+      // rasterTrgtPosLast = { left: 0, top: 0, width: 0, height: 0 };
+      rasterTrgtPosLast = null;
+      //console.log("rasterElemTo: step 3c -- null");
+    } else {
+      //console.log("rasterElemTo: step 5 -- " + elem.id + " -- display block");
+      rasterElem.style.display = 'block';
+      // overdose movement
+      rasterTrgtPosCur = {
+        left: parseInt(elem.style.left),
+        top: parseInt(elem.style.top),
+        width: parseInt(elem.style.width),
+        height: parseInt(elem.style.height)
+      };
+      //
+      if (null == rasterTrgtPosLast) {
+        rasterTrgtPosLast = rasterTrgtPosCur;
+      }
+      rasterElem.style.left = rasterPx(rasterTrgtPosCur.left, rasterTrgtPosLast.left, -2);
+      rasterElem.style.top = rasterPx(rasterTrgtPosCur.top, rasterTrgtPosLast.top, -2);
+      rasterElem.style.width = rasterPx(rasterTrgtPosCur.width, rasterTrgtPosLast.width, 4);
+      rasterElem.style.height = rasterPx(rasterTrgtPosCur.height, rasterTrgtPosLast.height, 4);
+      //
+      //
+    }
+  }
+
+
+  /*
+
+      Resize by Browser
+
+  */
+
+  const resizeObserverSkippInitialCall = new Set();
+  const resizeObserverDisabled = new Set();
+
+  function resizeObserverDisable( elem, disable = true ) {
+    // as ResizeObserver will fire on insert/delete in dom, display-change, resize by function ...
+    // console.log("resizeObserverDisable: " + elem.id + " -> " + disable);
+    if (disable) {
+      resizeObserverDisabled.add(elem);
+    } else {
+      setTimeout(() => {
+        resizeObserverDisabled.delete(elem); // or resize by drag will be triggered by async Observer
+      }, 100);
+    }
+  }
+
+  function resizeObserverResizeFinished() {
+    // console.log("resizeObserverResizeFinished");
+    stopDragAndResize();
+  }
+
+  const resizeObserver = new ResizeObserver(entries => {
+    /* !! Observation will fire when watched Element (https://drafts.csswg.org/resize-observer/#ref-for-element%E2%91%A3)
+      - inserted/removed from DOM.
+      - display gets set to none.
+    */
+    for (let entry of entries) {
+      if (resizeObserverDisabled.has(entry.target)) {
+
+        // console.log("resizeObserver: " + entry.target.id + " DISABLED");
+
+      } else if (resizeObserverSkippInitialCall.has(entry.target)) {
+
+        console.log("resizeObserver: " + entry.target.id);
+        if (null == dragResizeElement || dragResizeElement !== entry.target) {
+          // there is no default event when resizing stops
+          // on start of resize
+          // console.log("resizeObserver-mouseup: " + entry.target.id + " INIT EventListener");
+          window.addEventListener('mouseup', resizeObserverResizeFinished);
+          dragResizeElement = entry.target;
+        }
+        event = new Event('resize');
+        logData(event);
+        rasterElemTo(dragResizeElement);
+
+      } else {
+        console.log("resizeObserverSkippInitialCall: " + entry.target.id + " SKIPP( initial call )");
+        resizeObserverSkippInitialCall.add(entry.target);
+      }
+    }
+  });
+
+  resizeObserver.observe(document.getElementById('draggable2'));
+
+
+</script>
+
+</body>
+</html>

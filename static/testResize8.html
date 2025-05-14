@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Resizable and Draggable Div Example</title>
+  <style>
+
+      #frm_grid {
+        position: absolute;
+        display: grid;
+        grid-template-columns: 10px auto 40px auto 10px;
+        grid-template-rows: 10px auto 40px auto 10px;
+        // ease-in-out
+        //transition: all 500ms ease-in-out;
+		cursor: move;
+      }
+
+      #frm_grid:hover{
+        // border: 1px solid lightgrey;
+        // border-radius: 5px;
+        transition: all 50ms ease-out;
+      }
+
+
+      .frm_active.frm_mm {
+        //background: #f9f9f9;
+        background: transparent;
+        border: 1px solid blue;
+        border-radius: 5px;
+        transition: all 100ms ease-out;
+      }
+
+
+      #frm_grid:hover .frm_o, #frm_grid:hover .frm_mm{
+        border: 1px solid lightblue;
+        border-radius: 5px;
+      }
+
+      .frm_active ,.frm_auto .frm_o:hover, .frm_auto .frm_move:hover, .frm_auto .frm_e:hover {
+        //background: #f9f9f9;
+        background: lightblue;
+        border: 1px solid lightblue;
+        border-radius: 5px;
+        transition: all 100ms ease-out;
+      }
+
+
+
+
+      .frm_mm {
+        // background: lightgrey;	
+        border: 1px dotted lightgrey;
+		border-radius: 5px;
+		margin: 2px;
+      }
+
+    #frm_info {
+        font-family: verdana, sans-serif;
+        font-size: small;
+        color: gray;
+        cursor: text;
+      }
+
+    .prevent-select, .frm_e, .frm_o {
+        -webkit-user-select: none; /* Safari */
+        -ms-user-select: none; /* IE 10 and IE 11 */
+        user-select: none; /* Standard syntax */
+        margin: 2px;
+    }
+
+    #f_tl, #f_tr, #f_bl, #f_br {
+        margin: 0px;
+    }
+
+  </style>
+</head>
+<body>
+
+<!-- margin compensates for half border -->
+<div id="frm_raster" style="position: absolute; left: -1px; top: -1px; width: 274px; height: 224px; border: 2px dotted red; border-radius: 5px; margin-left: -1px; margin-top: -1px">
+
+</div>
+<div id="frm_grid" class="frm_auto" style="left: 0px; top: 0px; width: 274px; height: 224px;margin-left: -12px; margin-top: -12px"> <!-- margin compensates handles and gap -->
+  <div id="f_tl" class="frm_o" style="cursor: nw-resize"></div><div class="frm_e frm_move"></div><div id="f_tm" class="frm_o" style="cursor: ns-resize"></div><div class="frm_e frm_move"></div><div id="f_tr" class="frm_o" style="cursor: ne-resize"></div>
+  <div class="frm_e"></div><div id="frm_mm" class="frm_e frm_mm prevent-select"  style="grid-area: 2 / 2 / 5 / 5; display: flex;  align-items: center;  text-align: center;"  >
+           <p id="frm_info" style="width: 100%"  oninput="positionFromText(this.innerHTML)"  contenteditable="true" ></p>
+      </div><div class="frm_e"></div>
+  <div id="f_ml" class="frm_o" style="cursor: ew-resize"></div><div id="frm_mr" class="frm_o" style="cursor: ew-resize"></div>
+  <div class="frm_e"></div><div class="frm_e"></div>
+  <div id="f_bl" class="frm_o" style="cursor: sw-resize"></div><div class="frm_e"></div><div id="f_bm" class="frm_o" style="cursor: ns-resize"></div><div class="frm_e"></div><div id="f_br" class="frm_o" style="cursor: se-resize"></div>
+</div>
+
+<canvas id="myCanvas" width="1000px" height="1000px" style="width:100%;max-width:1000px;border:1px solid black"></canvas>
+
+</body>
+
+<script>
+  const BORDER_SIZE = 10;
+  const ePanel = document.getElementById("frm_grid");
+  const eFrmMM = document.getElementById("frm_mm");
+  const eFrmInfo = document.getElementById("frm_info");
+  const eRaster = document.getElementById("frm_raster");
+
+  let m_x, m_y, m_move;
+  let m_dir_lr =0; let m_dir_tb = 0 ; // dir [lr][tb]  l=-x r=+x / b=-y t=+y
+  let m_style =  {};
+  let dx_ = 0;
+  let dy_ = 0;
+
+  function resize(e){
+    m_force = false;
+    if (Array.isArray(e)) { // use to set position / resize
+        // add space for border, handle and margin all around // due to margin-left: -12px compensating for handles
+        [ m_style.left_i, m_style.top_i , m_style.width_i, m_style.height_i ] = e;
+        m_style.width_i = m_style.width_i + 24;
+        m_style.height_i = m_style.height_i + 24;
+        dx = 0 ; dy = 0;
+        m_force = true;
+    } else if (e) {
+        if (false && !e.target.id.includes("info")) {
+            e.stopPropagation(); // prevent text selection
+            e.preventDefault();
+        }
+        dx = e.x - m_x;
+        dy = e.y - m_y;
+        m_x = e.x;
+        m_y = e.y;
+    }
+    //dx_ = Math.sign( dx) * Math.round( dx_*0.9 + Math.abs(dx*0.1));
+    //dy_ = Math.sign( dy) * Math.round( dy_*0.9 + Math.abs(dy*0.1));
+    dx_ = hysterese(dx_, dx); dy_ = hysterese(dy_, dy);
+    console.log("resize " + e + " " + e.x + " " + e.y + " dx_:" + dx_ + " dy_:" + dy_);
+    if (m_dir_lr < 0 || m_move || m_force) {
+        ePanel.style.left   = (m_style.left_i   = m_style.left_i    + dx) + "px"; // left
+        eRaster.style.left  = ((m_style.left_i_raster = rasterize(m_style.left_i, dx_)) - 1)+ "px"; // minus half border
+    }
+    if ( m_dir_lr || m_force){
+        ePanel.style.width  = (m_style.width_i  = m_style.width_i   + m_dir_lr * dx) + "px"; // width or left (compensate for left)
+        eRaster.style.width = ((m_style.width_i_raster = rasterize(m_style.width_i - 24, dx_)) -1 )+ "px";
+    }
+    if (m_dir_tb < 0 || m_move || m_force){
+        ePanel.style.top    = (m_style.top_i    = m_style.top_i     + dy) + "px"; // top
+        eRaster.style.top   = ((m_style.top_i_raster = rasterize(m_style.top_i, dy_)) -1 ) + "px"; // minus half border
+    }
+    if ( m_dir_tb || m_force){
+        ePanel.style.height  = (m_style.height_i = m_style.height_i  + m_dir_tb * dy) + "px"; // bottom or top (compensate for top)
+        eRaster.style.height = ((m_style.height_i_raster = rasterize(m_style.height_i - 24, dy_)) -1 ) + "px";
+    }
+    //
+    // eFrmInfo.innerHTML = (m_style.left_i) + " , " + (m_style.top_i) + " px <br class='dummy'> " + (m_style.width_i - 24) + " x " + (m_style.height_i - 24) + " px";
+    eFrmInfo.innerHTML = (m_style.left_i_raster) + " , " + (m_style.top_i_raster) + " px <br class='dummy'> " + (m_style.width_i_raster) + " x " + (m_style.height_i_raster) + " px";
+
+  }
+
+
+
+    // TEST ----------------------------------------------------
+
+
+
+            let myPlotter = new XYPlotter("myCanvas");
+
+            // Plot a Line
+            myPlotter.plotLine(0, 0, myPlotter.xMax, myPlotter.yMax, "red");
+
+            // Plotter Object
+            function XYPlotter(id) {
+
+                this.canvas = document.getElementById(id);
+                this.ctx = this.canvas.getContext("2d");
+                this.xMin = 0;
+                this.yMin = 0;
+                this.xMax = this.canvas.width;
+                this.yMax = this.canvas.height;
+
+                // Plot a Line Function
+                this.plotLine = function(x0, y0, x, y, color) {
+                  this.ctx.moveTo(x0, y0);
+                  this.ctx.lineTo(x, y);
+                  this.ctx.strokeStyle = color;
+                  this.ctx.stroke();
+                }
+
+                // Plot a Circle Function
+                this.plotCircle = function(x, y, radius = 3, color = "red") {
+                  this.ctx.beginPath();
+                  this.ctx.fillStyle = color;
+                  this.ctx.strokeStyle = color;
+                  this.ctx.ellipse(x, y, radius, radius, 0, 0, 2 * Math.PI);
+                  //this.ctx.fill();
+                  this.ctx.stroke();
+                }
+
+
+            } // End Pottter Object
+
+
+
+    /// ----------------------------------------------------
+
+  function hysterese(d_, d) {
+    let d_new = d;
+    if ( (d_<0 && d <0) || (d_>0 && d >0) || (d>-1 && d<1) ) {
+        d_new = d_*0.9 + d*0.1;
+        if (d_new <= -4 && d > -4) d_new = -10; // historesis for raster
+        if (d_new >= 4 && d < 4) d_new = 10; // historesis for raster
+        d_new = Math.round(d_new*10)/10; // just for display
+    } else if (0 != d) {
+        d_new = d < -3 ? d : d < 0 ? -3 : d < 3 ? 3 : d ; // give bias to create a "hysteresis" for direction change
+    }
+    return d_new;
+  }
+
+  // create test for hysterese
+  function testHysterese() {
+    for (let d = -10; d < 11; d++) {
+        for (let d_ = -10; d_ < 11; d_++) {
+            let d_new = hysterese(d_, d);
+            console.log("hysterese: " + d_ + " " + d + " --> " + d_new);
+            // offset for screen
+            myPlotter.plotCircle(d_*10 + 200 , d*10 + 200, 10*Math.abs(d_new)+0.5 , d_new < -4 ? "red" : d_new < 0 ? "orange" : 0 == d_new ? "grey" : d_new < 4 ? "green" : "blue");
+            //myPlotter.plotCircle(d*10 + 200, d_*10 + 200 , Math.abs(d_new)+0.5 , d_new < 0 ? "red" : 0 == d_new ? "grey" : "blue");
+       }
+    }
+  }
+
+ testHysterese();
+
+
+
+
+  // rasterize position and size
+  function rasterize(l, d) {
+    //  to keep a gap between 2 raster-cells - each raster-cell needs a margin of 20px
+    //   > > > ] < < < | > > > [ < < <     --- where | is the raster and the borders from left ] or right [ , whilst >< indicates the felt shift towards the border
+    //   > > > ] < < < < < < < < < < <     --- if right border is moved - cell is left
+    //   > > > > > > > > > > > [ < < <     --- if left border is moved - cell is right
+    //           m m m | m m m             --- this offset may be handled by the margin of the raster-cell
+    //
+    let o = 0; // start offset -> use border ...
+    let r = d > -4 && d < 4 ? 25 : 100 ; // raster-size --- ! should not change rapidly during resize
+    let t = 2; // tolerance
+    let p = d < 0 ? l + t : d < 1 ? l + t : l - t + r;
+    let p_new = Math.trunc( (p - o) / r) * r + o;
+    console.log("resize.rasterize: " + l + " " + d + " --> " + p + " --> " + p_new);
+    myPlotter.plotCircle(p, p_new + ( d < -5 ? -6 : d < 5 ? d : 6 ), 1 , d < -5 ? "red" : d < 0 ? "orange" : 0 == d ? "grey" : d < 5 ? "green" : "blue");
+    //
+    //return  d > -5 && d < 5 ? Math.round(l / 25) * 25 : Math.round(l / 100) * 100;
+    //
+    //  "overshoot" -> if user resizes to larger size - do oversize rather than downsize using
+    //return  d > -5 && d < 5 ? Math.round(l + ( d < -5 ? -10 : d < 5 ? 0 :  +10 )/ 25) * 25 : Math.round(l + ( d < -5 ? -40 : d < 5 ? 0 :  +40 )  / 100) * 100;
+    //
+    return p_new;
+  }
+
+  function positionFromText(posText) {
+    console.log("positionFromText: " + posText);
+    // allow insert "100 100 100 100" + ENTER
+    if (posText.includes("<br>") && (posText.endsWith(" ") || posText.endsWith("<br><br>") || posText.endsWith("px"))) { // trigger on ENTER - !!! tricky dummy-space in fix "<br >"
+      posText=posText.replace(/<br>/g, "");
+      posText=posText.replace(/[^0-9]/g, " ");
+      posText=posText.replace(/  */g, " ");
+      var posArray = posText.split(" ");
+      posArray = posArray.map(x => parseInt(x)); // enforce int
+      //  remove NaN from array
+      if (posArray.includes(NaN)) {
+        posArray = posArray.filter(function (el) {return !isNaN(el);});
+      }
+      // check if array contains NaN and has 4 elements
+        if (posArray.length < 4) {
+            console.log("positionFromText: " + posText + " --> " + posArray + " contains NaN (wait for valid input)");
+        } else {
+          console.log("positionFromText: " + posText + " --> " + posArray);
+          resize(posArray);
+        }
+    }
+  }
+
+  function m_style_init(runDelayed = 100) {
+       if (runDelayed) {
+            setTimeout(function(){ m_style_init(0); }, runDelayed);
+       } else {
+            console.log("m_style_init");
+            // eFrmMM-getComputedStyle-postion left/top is "auto" !!!
+            m_style = getComputedStyle(ePanel, ''); // it is not immediately updated !!!
+            // panel-margin-left/top = -12px // panel:  left=10px -> start = -10px -> += 10px frm_o -> 0px -> += 2px frm_mm-margin -> 2px  ---> overall -0px
+            resize([parseInt(m_style.left), parseInt(m_style.top), parseInt(m_style.width) - 24, parseInt(m_style.height) -24]);
+       }
+  }
+
+
+  ePanel.addEventListener("mousedown", function(e){
+    // idea - touch point liegt immer innen -> d.h. mit pos/negative wert kann zwischen l und r unterschieden werden
+    // annahme: width > BORDER_SIZE
+    let e_target_id = e.target.id;
+    if (e_target_id.includes("frm_info")) {
+        e.stopPropagation(); // allow text selection / editing
+    } else {
+        allowMove = true; // allow moving by draging non-sesitive border area / center
+        e_target_id = e_target_id.replace("frm_", "");
+        m_dir_lr = e_target_id.includes("l") ? -1 : e_target_id.includes("r") ? +1 : 0 ;
+        m_dir_tb = e_target_id.includes("t") ? -1 : e_target_id.includes("b") ? +1 : 0 ;
+        if (0 != m_dir_lr || 0 != m_dir_tb || allowMove)  {
+          m_move = (0 == m_dir_lr) && (0 == m_dir_tb);
+          console.log( "mousedown[" + e_target_id + "]: -->  start lr: " + (m_dir_lr) + " tb: " + (m_dir_tb) + " move: " + m_move);
+            m_x = e.x;
+            m_y = e.y;
+          m_style_init();
+          document.addEventListener("mousemove", resize, false);
+          // hide all other handles - except the one clicked / or none if none handle clicked
+          let eFrmOs = document.getElementsByClassName("frm_o");
+          for (let i = 0; i < eFrmOs.length; i++) {
+            eFrmOs[i].style.visibility = "hidden";
+          }
+          e.target.style.visibility = "visible";
+          e.target.classList.add("frm_active");
+          ePanel.classList.remove("frm_auto");
+        }
+    }
+    return false;
+  }, false);
+
+  document.addEventListener("mouseup", function(){
+      document.removeEventListener("mousemove", resize, false);
+      // update grid
+      [ ePanel.style.left, ePanel.style.top, ePanel.style.width, ePanel.style.height ] = [ (m_style.left_i_raster-1) + "px", (m_style.top_i_raster-1) + "px", (m_style.width_i_raster + 25) + "px", (m_style.height_i_raster + 25) + "px"];
+      // reset all handles
+      let eFrmOs = document.getElementsByClassName("frm_o");
+      for (let i = 0; i < eFrmOs.length; i++) {
+        eFrmOs[i].style.visibility = "visible";
+      }
+      eFrmOs = document.getElementsByClassName("frm_active");
+      for (let i = 0; i < eFrmOs.length; i++) {
+        eFrmOs[i].classList.remove("frm_active");
+      }
+      ePanel.classList.add("frm_auto");
+  }, false);
+
+  m_style_init();
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,547 @@
+#main-title {
+    margin-top: 0px;
+}
+
+code {
+    color: #449;
+}
+
+#rapidoid-title {
+    font-size: 20px;
+	font-weight: bold;
+}
+
+.docker-code {
+	color: #777;
+	font-size: 16px;
+	margin-left: 10px;
+}
+
+.error-result {
+	color: #755;
+	font-weight: bold;
+}
+
+div.sep-example {
+	padding-top: 3px !important;
+}
+
+body {
+    background-color: #DDD !important;
+}
+
+h4.caption {
+	margin-bottom: 10px;
+	margin-top: 5px;
+	padding: 7px;
+	border: 2px solid #E9E9E9;
+	font-size: 20px;
+	font-weight: bold;
+	color: #FFF;
+	background: #555;
+}
+
+.section-caption {
+	margin-bottom: 3px;
+	margin-top: 10px;
+	font-size: 16px;
+	color: #555;
+	padding: 3px;
+	border: 1px solid #E9E9E9;
+	background: #F5F5F5;
+}
+
+.send-requests-caption {
+	margin-bottom: 20px;
+	margin-top: 20px;
+	font-size: 16px;
+	font-weight: bold;
+	color: #555;
+	text-align: center;
+}
+
+.routes-info-caption {
+	margin-bottom: 20px;
+	margin-top: 20px;
+	font-size: 16px;
+	font-weight: bold;
+	color: #555;
+	margin-left: 5px;
+	text-align: center;
+}
+
+.routes-info-caption2 {
+	margin-bottom: 3px;
+	margin-top: 10px;
+	margin-left: 5px;
+	font-size: 14px;
+	color: #555;
+}
+
+.routes-info {
+	font-size: 13px;
+}
+
+.module-header {
+	font-size: 34px;
+	color: #333;
+	margin-top: 10px;
+}
+
+.module-desc {
+	font-size: 16px;
+	color: #333;
+}
+
+.module-explanation {
+    margin: 20px 0px;
+	font-size: 16px;
+	color: #333;
+}
+
+.module-notes {
+	margin: 10px 0px;
+	font-size: 16px;
+	color: #333;
+	border-left: 3px solid #AAA;
+	padding-left: 10px;
+	padding-bottom: 5px;
+	padding-top: 5px;
+}
+
+.badge-eg-num {
+	font-size: 14px;
+	font-weight: bold;
+	vertical-align: middle;
+	background-color: #CCC;
+	color: #000;
+}
+
+.badge-docker {
+	font-size: 14px;
+	font-weight: bold;
+	vertical-align: middle;
+	background-color: #679;
+	color: #FFF;
+}
+
+.badge-module {
+	font-size: 14px;
+	font-weight: bold;
+	vertical-align: middle;
+	background-color: #967;
+	color: #FFF;
+}
+
+.embedd {
+	width: 100% !important;
+	height: 500px !important;
+}
+
+#gen {
+	color: black;
+}
+
+#main_title {
+	margin-bottom: 15px;
+}
+
+#main_subtitle {
+	margin-bottom: 25px;
+}
+
+.subtle {
+	color: #555;
+	font-size: 14px;
+}
+
+.app-example-title {
+	margin-bottom: 10px;
+}
+
+.eg-verb {
+	color: white;
+	font-weight: bold;
+}
+
+.eg-GET {
+	background-color: #475;
+}
+
+.eg-POST {
+	background-color: #744;
+}
+
+.eg-uri {
+	background-color: #77A;
+	color: white;
+	font-weight: normal;
+	font-size: 13px;
+}
+
+.eg-result {
+	background-color: #FFF;
+	border: 1px dotted;
+	border-color: #BBB;
+	margin-top: 10px;
+	margin-bottom: 25px;
+	padding: 2px;
+}
+
+.eg-error {
+	background-color: #FFF;
+	border: 1px dotted;
+	border-color: #BBB;
+	margin-top: 10px;
+	margin-bottom: 25px;
+	padding: 2px;
+}
+
+.post-data {
+	margin-top: 3px;
+}
+
+pre {
+	font-size: 13px;
+}
+
+.eg_code {
+	margin-bottom: 25px;
+}
+
+.code-clean {
+	border: none !important;
+	margin-bottom: 25px;
+	background: none;
+	box-shadow: none !important;
+}
+
+.low-level-desc {
+	padding: 5px;
+	font-size: 14px;
+	border-color: #BBB;
+}
+
+.option-x {
+	padding: 4px;
+	font-size: 18px;
+	border: 1px solid;
+	border-color: #733;
+	color: #733;
+	margin-right: 15px;
+}
+
+.module-title {
+	font-size: 16px;
+}
+
+.module-about {
+	font-size: 14px;
+	font-weight: bold;
+}
+
+.module-about-right {
+	font-size: 12px;
+	font-weight: bold;
+}
+
+#mc_embed_signup {
+    margin-top: -4px;
+}
+
+#mce-EMAIL {
+	width: 190px;
+}
+
+.stats-field {
+	margin-right: 20px;
+}
+
+.module-stats {
+	margin-top: 15px;
+}
+
+.stats-value {
+	font-weight: bold;
+}
+
+.object-details {
+	font-size: 11px;
+	line-height: 2.6;
+	padding: 2px 3px;
+	border: #aaa solid 1px;
+	font-weight: bold;
+	border-radius: 5px;
+	color: #777;
+}
+
+.object-value {
+	padding: 2px 3px;
+}
+
+.object-class {
+	padding: 2px 3px;
+	border-left: #999 solid 1px;
+	color: #888;
+}
+
+.show-code {
+	margin-top: -4px;
+}
+
+.maven-code {
+	font-size: 12px;
+	border: #eee solid 1px !important;
+	border-radius: 0px;
+	background: none;
+}
+
+pre {
+	border: none !important;
+}
+
+.text-box {
+	padding: 0px 3px;
+	border: #aaa solid 1px !important;
+	border-radius: 5px;
+}
+
+.frameworks {
+	font-weight: bold;
+}
+
+.empty-line {
+	font-size: 8px;
+	word-wrap: break-word;
+}
+
+.example-line, .comment-line {
+	font-size: 13px;
+	font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
+	line-height: 1.5;
+	word-wrap: break-word;
+	padding: 1px 5px;
+	height: 22px !important;
+}
+
+.empty-line, .example-line, .comment-line  {
+	background: #F7F7F7;
+}
+
+._code_comment {
+	font-size: 13px !important;
+}
+
+._code_comment .text-box {
+	padding: 1px;
+	padding-bottom: 1px;
+	border: #aaa solid 1px !important;
+	border-radius: 1px;
+}
+
+._code_tmpl {
+	color: #A3A;
+	font-weight: bold;
+}
+
+.eg_title {
+	background: #FFF !important;
+	color: #333 !important;
+	border: 1px solid #CCC;
+}
+
+.show-gui {
+	border: dashed 1px #ccc;
+	padding: 5px;
+	border-radius: 5px;
+	margin-bottom: 10px;
+}
+
+.page-footer {
+	text-align: center;
+	font-size: 12px;
+	word-wrap: break-word;
+	margin-top: 5px;
+	margin-bottom: 5px;
+}
+
+#group-email {
+	font-size: 14px;
+	word-wrap: break-word;
+	margin-top: 18px;
+	margin-bottom: 5px;
+	font-weight: bold;
+}
+
+.docs {
+	font-size: 14px;
+	padding-bottom: 15px;
+}
+
+.api-docs td {
+	padding: 5px !important;
+	vertical-align: middle !important;
+}
+
+.api-docs pre {
+	padding: 0px !important;
+	margin: 0px !important;
+	vertical-align: middle !important;
+}
+
+.toc-wrap {
+    padding: 5px 0px;
+    font-size: 13px;
+    border-bottom: solid #DDD 1px;
+}
+
+.mini-example-title {
+    color: #FFF !important;
+}
+
+.routes {
+    color: #555 !important;
+    font-weight: bold;
+}
+
+/*
+ * LOGIN CSS
+ * Derived from: http://bootsnipp.com/snippets/featured/custom-login-registration-amp-forgot-password
+ * Copyright (c) 2013 Bootsnipp.com, 2015-2016 Nikolche Mihajlovski
+ */
+
+/*=== 3. Text Outside the Box ===*/
+.etc-login-form {
+	color: #919191;
+	padding: 10px 20px;
+}
+
+.etc-login-form p {
+	margin-bottom: 5px;
+}
+/*=== 4. Main Form ===*/
+.login-form-1 {
+	max-width: 300px;
+	border-radius: 5px;
+	display: inline-block;
+}
+
+.main-login-form {
+	position: relative;
+}
+
+.login-form-1 .form-control {
+	border: 0;
+	box-shadow: 0 0 0;
+	border-radius: 0;
+	background: transparent;
+	color: #555555;
+	padding: 7px 0;
+	font-weight: bold;
+	height: auto;
+}
+
+.login-form-1 .form-control::-webkit-input-placeholder {
+	color: #999999;
+}
+
+.login-form-1 .form-control:-moz-placeholder, .login-form-1 .form-control::-moz-placeholder,
+	.login-form-1 .form-control:-ms-input-placeholder {
+	color: #999999;
+}
+
+.login-form-1 .form-group {
+	margin-bottom: 0;
+	border-bottom: 2px solid #efefef;
+	padding-right: 20px;
+	position: relative;
+}
+
+.login-form-1 .form-group:last-child {
+	border-bottom: 0;
+}
+
+.login-group {
+	background: #ffffff;
+	color: #999999;
+	border-radius: 8px;
+	padding: 10px 20px;
+}
+
+.login-group-checkbox {
+	padding: 5px 0;
+}
+/*=== 5. Login Button ===*/
+.login-form-1 .login-button {
+	position: absolute;
+	right: -25px;
+	top: 50%;
+	background: #ffffff;
+	color: #999999;
+	padding: 11px 0;
+	width: 50px;
+	height: 50px;
+	margin-top: -25px;
+	border: 5px solid #efefef;
+	border-radius: 50%;
+	transition: all ease-in-out 500ms;
+}
+
+.login-form-1 .login-button:hover {
+	color: #555555;
+	transform: rotate(450deg);
+}
+
+.login-form-1 .login-button.clicked {
+	color: #555555;
+}
+
+.login-form-1 .login-button.clicked:hover {
+	transform: none;
+}
+
+.login-form-1 .login-button.clicked.success {
+	color: #2ecc71;
+}
+
+.login-form-1 .login-button.clicked.error {
+	color: #e74c3c;
+}
+
+/*=== 9. Misc ===*/
+.logo {
+	padding: 15px 0;
+	font-size: 25px;
+	color: #aaaaaa;
+	font-weight: bold;
+}
+
+#login-wrapper {
+  padding:10px 0;
+}
+
+/************ END OF THE LOGIN CSS ************/
+
+.puzzle-icon {
+    background: url('img/puzzle.png');
+    background-repeat: no-repeat;
+    padding: 18px 22px !important;
+    font-size: 20px !important;
+}
+
+.puzzle-icon-fat {
+    background: url('img/puzzle.png');
+    background-repeat: no-repeat;
+    padding: 18px 20px !important;
+    font-size: 20px !important;
+}
+
+.puzzle-title {
+    font-size: 20px !important;
+    line-height: 1.6;
+}
+
+#docker-title {
+    padding-top: 20px;
+    padding-bottom: 15px;
+}

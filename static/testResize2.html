@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Resizable and Draggable Div</title>
+  <style>
+    body {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+        background-color: #f0f0f0;
+    }
+    #draggable {
+        width: 200px;
+        height: 200px;
+        background-color: #4CAF50;
+        position: absolute;
+        cursor: move;
+        resize: both;
+        overflow: auto;
+        border: 2px solid #333;
+    }
+    .resizer {
+        width: 10px;
+        height: 10px;
+        background: #333;
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        cursor: se-resize;
+    }
+  </style>
+</head>
+<body>
+
+<div id="draggable">
+  Drag me around and resize me!
+  <div class="resizer"></div>
+</div>
+
+<script>
+  const draggable = document.getElementById('draggable');
+  const resizer = document.querySelector('.resizer');
+
+  // Drag functionality
+  draggable.addEventListener('mousedown', (e) => {
+      let offsetX = e.clientX - draggable.getBoundingClientRect().left;
+      let offsetY = e.clientY - draggable.getBoundingClientRect().top;
+
+      const mouseMoveHandler = (e) => {
+          draggable.style.left = `${e.clientX - offsetX}px`;
+          draggable.style.top = `${e.clientY - offsetY}px`;
+      };
+
+      const mouseUpHandler = () => {
+          document.removeEventListener('mousemove', mouseMoveHandler);
+          document.removeEventListener('mouseup', mouseUpHandler);
+      };
+
+      document.addEventListener('mousemove', mouseMoveHandler);
+      document.addEventListener('mouseup', mouseUpHandler);
+  });
+
+  // Resize functionality
+  resizer.addEventListener('mousedown', (e) => {
+      e.preventDefault();
+      const initialWidth = draggable.offsetWidth;
+      const initialHeight = draggable.offsetHeight;
+      const initialMouseX = e.clientX;
+      const initialMouseY = e.clientY;
+
+      const mouseMoveHandler = (e) => {
+          const newWidth = initialWidth + (e.clientX - initialMouseX);
+          const newHeight = initialHeight + (e.clientY - initialMouseY);
+          draggable.style.width = `${newWidth}px`;
+          draggable.style.height = `${newHeight}px`;
+      };
+
+      const mouseUpHandler = () => {
+          document.removeEventListener('mousemove', mouseMoveHandler);
+          document.removeEventListener('mouseup', mouseUpHandler);
+      };
+
+      document.addEventListener('mousemove', mouseMoveHandler);
+      document.addEventListener('mouseup', mouseUpHandler);
+  });
+</script>
+
+</body>
+</html>

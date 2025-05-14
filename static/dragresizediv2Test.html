@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <!-- shortened version of testResize3.html -->
+
+  <style>
+    .box {
+        top: 100px;
+        width: 100px;
+        height: 100px;
+        border: 2px solid #007BFF;
+        position: relative;
+        padding: 10px;
+        box-sizing: border-box;
+        overflow: hidden;
+    }
+
+    .resizable {
+        resize: both; /* Allows resizing */
+    }
+
+    .resizableOnHover:hover {
+        resize: both; /* Allows resizing */
+    }
+
+
+    .dragger {
+        width: 100%;
+        height: 10px;
+        background: #EBF5FF;
+        position: absolute;
+        top: 0;
+        left: 0;
+        cursor: move;
+        <!-- z-index: 1000; must not be set to allow other grid to be on front -->
+    }
+
+    .dragger:hover, .dragger.active {
+        background: #007BFF;
+    }
+
+
+    .resizer {
+        width: 10px;
+        height: 10px;
+        /* background: #EBF5FF; */
+        background: transparent;
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        cursor: se-resize;
+        <!-- z-index: 1000; must not be set to allow other grid to be on front -->
+    }
+
+    .resizerIcon{
+        background: transparent;
+        color: transparent;
+    }
+
+    .resizer.resizerIcon:hover {
+        color: #007BFF;
+        background: transparent;
+        width: auto;
+        height: auto;
+        font-size:48px;
+        rotate: -45deg;
+        transform: translate(-8px,15px);
+    }
+
+
+    .resizer:hover, .resizer.active {
+        background: #007BFF;
+    }
+
+    #resizeFrame{
+        position: absolute ;
+        border: gray 1px dotted;
+        left: 50px;
+        top: 50px;
+        width: 50px;
+        height: 50px;
+        text-align: center;
+        vertical-align: middle;
+        font-family: verdana, sans-serif;
+        font-size: small;
+        color: gray;
+        z-index: 1000;
+        display: none;
+        transition: all 100ms ease-out 100ms;
+    }
+
+
+  </style>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Resizable and Draggable Div Example</title>
+</head>
+<body>
+
+<div id="msg">
+</div>
+
+<!-- use resizable to ensure place for resizer while having scrollbars
+        - but enabling resizable - will hide the resizer AND will need observer ...
+-->
+<div class="box " id="draggable" style="position: absolute; left: 200px; top: 200px; width: 400px">
+  <div class="dragger"></div>
+  <p id="boxInfo">Resize me and drag me!</p>
+  <!--<div class="resizer_"></div>-->
+  <i class="resizer resizerIcon fa fa-caret-down " style=""></i>
+</div>
+
+<div class="box resizable" id="draggable2" style="position: absolute; left: 50px; top: 150px;">
+  <div class="dragger dragger2"></div>
+  <p id="boxInfo2">Resizer by Browser!<br><br><br></p>
+  <div class="resizer"></div>
+</div>
+
+<div id="resizeFrame" style="" >
+  <div id="resizeFrameContent" style="position: absolute;width: 100%;margin: auto;text-align: center;top: 0px;">
+    0, 0 <br> 0, 0
+  </div>
+</div>
+
+<script src="util.js"></script>
+<script src="util_toggle.js"></script>
+<script src="dragresizediv2.js"></script>
+
+
+</body>
+</html>

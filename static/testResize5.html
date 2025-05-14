@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Resizable and Draggable Div Example</title>
+  <style>
+
+      #frm {
+          position: absolute;
+          width: 250px;
+          height: 200px;
+          background: white;
+          border: 1px solid black;
+      }
+
+      #frm_t {
+          background: grey;
+          height: 20px;
+          cursor: ns-resize;
+      }
+
+
+  </style>
+</head>
+<body>
+
+<div id="frm" style="left: 10px; width: 250px; height: 200px">
+  <div id="frm_t" style="background: grey; height: 20px; cursor: ns-resize">
+    <div id="frm_tl" style="float:left; background: green; width: 20px; height: 20px; cursor: nw-resize"></div>
+    <div id="frm_tr" style="float: right; right: 0; background: yellow; width: 20px; height: 20px; cursor: ne-resize"></div>
+  </div>
+  <div id="frm_m" style="background: white; height: 100%">
+    <div id="frm_ml" style="float:left; background: red; width: 20px;; height: 100%; cursor: ew-resize "></div>
+    <div id="frm_mr" style="float: right; right: 0; background: blue; width: 20px;; height: 100%; cursor: ew-resize "></div>
+  </div>
+  <div id="frm_b" style="background: grey; height: 20px; cursor: ns-resize">
+    <div id="frm_bl" style="float:left; background: green; width: 20px; height: 20px; cursor: sw-resize"></div>
+    <div id="frm_br" style="float: right; right: 0; background: yellow; width: 20px; height: 20px; cursor: se-resize"></div>
+  </div>
+</div>
+
+
+</body>
+
+<script>
+  const BORDER_SIZE = 10;
+  const panel = document.getElementById("frm");
+
+  let m_x, m_y, m_dir_lr, m_dir_tb; // dir [lr][tb]  l=-x r=+x / b=-y t=+y
+  function resize(e){
+    const dx = m_x - e.x;
+    const dy = m_y - e.y;
+    m_x = e.x;
+    m_y = e.y;
+    let e_target_style = getComputedStyle(e.target, '');
+    if (m_dir_lr < 0 ) panel.style.left = (parseInt(e_target_style.left) - dx) + "px"; // left
+    if ( m_dir_lr ) panel.style.width = (parseInt(e_target_style.width) - m_dir_lr * dx) + "px"; // width or left (compensate for left)
+    if (m_dir_tb < 0 ) panel.style.top = (parseInt(e_target_style.top) - dy) + "px"; // top
+    if ( m_dir_tb ) panel.style.height = (parseInt(e_target_style.height) - m_dir_tb * dy) + "px"; // bottom or top (compensate for top)
+  }
+
+  panel.addEventListener("mousedown", function(e){
+    // idea - touch point liegt immer innen -> d.h. mit pos/negative wert kann zwischen l und r unterschieden werden
+    // annahme: width > BORDER_SIZE
+    let e_target_style = getComputedStyle(e.target, '');
+    m_dir_lr = e.offsetX < BORDER_SIZE ? -1 : parseInt(e_target_style.width) - BORDER_SIZE < e.offsetX ? +1 : 0 ;
+    m_dir_tb = e.offsetY < BORDER_SIZE ? -1 : parseInt(e_target_style.height) - BORDER_SIZE < e.offsetY ? +1 : 0 ;
+    console.log(e.offsetY + "  --  " + (parseInt(e_target_style.height) - e.offsetY)) ;
+    if (0 != m_dir_lr || 0 != m_dir_tb ) {
+      console.log( " -->  start " + (m_dir_lr) + " " + (m_dir_tb));
+      m_x = e.x;
+      m_y = e.y;
+      document.addEventListener("mousemove", resize, false);
+    }
+  }, false);
+
+  document.addEventListener("mouseup", function(){
+      document.removeEventListener("mousemove", resize, false);
+  }, false);
+</script>
+
+</body>
+</html>
