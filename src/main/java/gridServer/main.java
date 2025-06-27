@@ -179,26 +179,11 @@ public class main {
                         , ""
                         , "" /*  and references .. */
                         , ""
-                        , "[productNo,articleNo,identifier,article_av.*]article[]article_av[<]attribute W attribute.identifier='katalog_artikel'"
-                        , "[productNo,articleNo,identifier,article_av.*]article[]article_av[<]attribute"
-                        , "article[]article_asset_rel"
-                        , "article[]article_asset_rel[<]asset"
-                        , "article[]article_av[<]attribute"
-                        , "article[]article_av[<]attribute[productNo,articleNo,identifier,article_av.*]"
-                        , "article[]article_detail_tab"
-                        , "article[]article_detail_tab[content][textid]locale_text"
-                        , "article[]article_detail_tab[content][textid]locale_text[article_detail_tab.tabname][id]type"
-                        , "article[]article_price[<]type[productNo,articleNo,identifier,article_price.*]"
-                        , "article[]article_rating"
-                        , "attribute[<]type"
-                        , "attribute[]attribute_value"
-                        , "category_node[description][textid]locale_lookuptext"
-                        , "erp_import_article[]erp_import_article_av"
-                        , "job[]job_history[id][refid]process_log[job.identifier,process_log.*] order by job_history.id desc"
-                        , "job[]job_history[job.identifier,job_history.*] order by job_history.id desc"
-                        , "type[]attribute"
-                        , "type[]attribute[type.identifier,attribute.*] order by attribute.id desc"
-                        , "article[]article_av[<]attribute[article_av.freetext][textid]locale_freetext[productno,articleno,identifier,locale,text,article_av.*]"
+                        , "dbTab"
+                        , "meter[energy_in_id][reading_id]meter_reading15m[device_id,device_purpose,reading_id,timestamp,value]"
+                        , "ls"
+                        , "gateway[id][gateway_Id]meter[energy_in_id][reading_id]meter_reading15m[gateway.gateway_id, device_id,device_purpose,reading_id,timestamp,value]"
+                        , "gateway[id][gateway_Id]meter[energy_in_id][reading_id]meter_consumption_grid15m[gateway.gateway_id, device_id,device_purpose,reading_id,timestamp,value]"
 
                 };
 
@@ -322,12 +307,12 @@ public class main {
         // https://replit.com/@preisfrieden/jsGrdi1
 
         // files from  static/ is loadadble by default ..!
-        // http://localhost:8080/index.html
+        // http://localhost:8081/index.html
 
-        // http://localhost:8080/size
+        // http://localhost:8081/size
 
-        System.out.println("start with http://localhost:8080/");
-        System.out.println("test  with http://localhost:8080/test");
+        System.out.println("start with http://localhost:8081/");
+        System.out.println("test  with http://localhost:8081/test");
         System.out.println("-------------------------------------------");
         //On.get("/size").json("helloWorld"); // .json((String msg) -> msg.length());
         //On.get("/size").json("helloWorld2");
@@ -348,6 +333,8 @@ public class main {
 
 
          */
+
+        On.port(8081);
 
         On.post("/upload").html(new ReqRespHandler() {
             @Override
@@ -420,7 +407,8 @@ public class main {
 
 
                         if (urlHelper.getHost().isEmpty()) {
-                            if (login.toUpperCase().endsWith("VM")) {
+                            if (login.toUpperCase().endsWith("VM")  || login.toUpperCase().endsWith("Local")
+                                    || login.toUpperCase().endsWith("Docker") ) {
                                 main.notifyInfo( "try generate from login-name (empty host, no matching keypass)");
                                 UrlHelper urlHelper2 = getVMUrl(login);
                                 main.notifyInfo( "try credentials from login-name (" + urlHelper2.getUrlMaskedPWD() + ")");
@@ -723,24 +711,11 @@ public class main {
             @Override
             public Object execute(Req req, Resp resp) throws Exception {
                 JSONArray json = new JSONArray();
-                String suggestions = " article[]article_price[<]type[productNo,articleNo,identifier,article_price.*] // article[]article_av[<]attribute[productNo,articleNo,identifier,article_av.*] ";
-                suggestions += " // erp_import_article[]erp_import_article_av";
-                suggestions += " // article[]article_asset_rel[<]asset // article[]article_detail_tab[content][textid]locale_text ";
-                suggestions += " // attribute[]attribute_value // type[]attribute // type // users // datafeed // article ";
-                suggestions += " // attribute[description][textid]locale_lookuptext // category_node[description][textid]locale_lookuptext ";
-                suggestions += " // article[]article_av[<]attribute[productno,articleno,identifier,article_av.*]";
-                suggestions += " // job[]job_history[job.identifier,job_history.*] order by job_history.id desc // progress_tracker order by id desc // job[]job_history[id][refid]process_log[job.identifier,process_log.*] order by job_history.id desc ";
-                suggestions += " // job[]job_history[job.identifier,state,,job_history.starttime] W witherror=1 or endtime is null O max(job_history.starttime) desc // JOB_ERROR ";
-                suggestions += " // dummy.csv // .csv[Artikel][articleNo]article // .csv[<]article ";
-                suggestions += " // article[]node_article_rel[node][id]category_node[productno,node_article_rel.status,category_node.*] ";
-                suggestions += " // article[]node_article_rel[node][id]category_node[productno,node_article_rel.status,node_article_rel.lastmodified,category_node.*] order by node_article_rel.lastmodified desc ";
-                suggestions += " // article[]article_rating[productNo,articleNo,article_rating.*] O id desc ";
-                suggestions += " // ipim-supply.supplier // ipim-supply.supplier.JSON // db.tabUsage // dbTab // ipim-supply.tabUsage // ERP_STATE ";
-                suggestions += " // worklist[description][textid]locale_freetext[worklist.type][id]type ";
-                suggestions += " // attribute_mapping //  category_node[id][node]node_av[<]attribute // category_node[description][textid]locale_lookuptext[category_node.id][node]node_av[<]attribute // ";
-                suggestions += " // article[]article_av[attributevalue][id]attribute_value[<]attribute[productNo,articleNo,attribute.identifier,attribute_value.identifier,article_av.*] W attribute.identifier ~ 'mig2_Farb' ";
-                suggestions += " // article[]article_av[<]attribute[article_av.freetext][textid]locale_freetext[productNo,articleNo,identifier,text,article_av.*] W identifier = 'variantShortDescription' ";
+                String suggestions = " ";
+                suggestions += " meter[energy_in_id][reading_id]meter_reading15m[device_id,device_purpose,reading_id,timestamp,value]";
                 suggestions += " // ~/status.sh -a // tail -n 100 ~/core.log // ~/core.log ";
+                suggestions += " // gateway[id][gateway_Id]meter[energy_in_id][reading_id]meter_reading15m[gateway.gateway_id, device_id,device_purpose,reading_id,timestamp,value] // ";
+                suggestions += " // gateway[id][gateway_Id]meter[energy_in_id][reading_id]meter_consumption_grid15m[gateway.gateway_id, device_id,device_purpose,reading_id,timestamp,value] //";
                 suggestions += " // url.check data/2024_iPIM_QRY_short.kdbx ";
                 // check query_list for additional ...
                 suggestions = QrySyntax.extractSuggestion(suggestions);
@@ -782,14 +757,13 @@ public class main {
     private static UrlHelper getVMUrl(String login) {
         UrlHelper urlHelper2 = new UrlHelper(login);
         // jdbc:postgresql://pagen@192.168.56.114:5432/pagen
-        urlHelper2.setHost("192.168.56.114");
-        String userName = (login.replaceAll("_.*","").toLowerCase() + "    " ).substring(0,3).trim();
-        userName = userName.replaceAll("3p", "pagen");
-        userName = userName.replaceAll("fd", "fod");
+        // Minoa_Local::jdbc:postgresql://minoa@localhost:5432/minoa
+        urlHelper2.setHost("localhost");
+        String userName = (login.replaceAll("_.*","").toLowerCase() ).trim();
         urlHelper2.setUserName( userName);
         urlHelper2.setUserPwd( userName + userName);
         urlHelper2.setPort(5432);
-        urlHelper2.setPath("/"+ userName);
+        urlHelper2.setPath("/"+ "changeMe");
         urlHelper2.setScheme("jdbc:postgresql");
         return urlHelper2;
     }

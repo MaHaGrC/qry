@@ -2,6 +2,7 @@ html, body {
   height: 100%;
   width: 100%;
   margin: 0;
+  background: #f8f8ff;
 }
 
 
@@ -26,8 +27,9 @@ https://www.w3schools.com/cssref/playdemo.php?filename=playcss_justify-self
   border-radius: 5px;
   padding-right: 5px; /*gain space to scrollbar */
   /* Arial  ArialNarrow  Helvetica Courier   Courier New  Verdana  Candara  Calibri */
-  font-family: Verdana;
-  font-size: 9px;
+  font-family: Inter,Helvetica,Arial,sans-serif;
+  font-size: 12px;
+  color: #778899;
   column-gap: 00px;
   row-gap: 5px;
   /*row-gap: 10px;*/
@@ -1072,7 +1074,7 @@ html::-webkit-scrollbar-thumb:active {
 }
 
 .msgNew {
-    color: green !important;
+    color: limegreen !important;
     font-weight: bold;
     transition: transform 500ms ease-in-out 0s, opacity 500ms ease-in-out; /*nicht vererbbar*/
 }
@@ -1099,10 +1101,11 @@ html::-webkit-scrollbar-thumb:active {
 
 .msg_info {
     transition: transform 500ms ease-in-out 0s, opacity 500ms ease-in-out; /*nicht vererbbar*/
+  color: lightgrey;
 }
 
 .msg_important {
-    color: green;
+    color: lightgreen;
     transition: transform 500ms ease-in-out 0s, opacity 500ms ease-in-out; /*nicht vererbbar*/
 }
 
@@ -1206,6 +1209,7 @@ html::-webkit-scrollbar-thumb:active {
 
 a:link {
   text-decoration: none;
+  color: #376fb3;
 }
 a:visited {
   text-decoration: none;

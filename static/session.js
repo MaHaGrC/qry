@@ -41,7 +41,7 @@ function session2qry_( name = "", ignoreGrid = null){
 
 async function setSynonym(syn , val) {
   xDebug('session', "session::setSynonym");
-  url = new URL("http://localhost:8080/query");
+  url = new URL("http://localhost:8081/query");
   url.searchParams.append("qry", syn + "===" + val+ " UPDATE");
   let text = null;
   try{

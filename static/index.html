@@ -187,7 +187,7 @@
             var uri = evt.dataTransfer.getData('text/uri-list');
             var data = evt.dataTransfer.getData('text/plain') ?? evt.dataTransfer.getData('Text');
             var qry = evt.dataTransfer.getData('text/qry');
-            var query = qry ?? decodeURIComponent(uri.replace("http://localhost:8080/?qry=",""));
+            var query = qry ?? decodeURIComponent(uri.replace("http://localhost:8081/?qry=",""));
             // remove session ... as we want to keep all others..
             // {"session":"drag","grids":[{"qry":"article","prop":{"colOrderIdx":[1,2,3,4,5,8,9,10,11,12,14]}}]}
             // query = query.replace('{"session":"drag","grids":[','').replaceAll(/\]\}$/g,'');
@@ -248,7 +248,7 @@
                 //event.dataTransfer.setData('text/html', grid.eGrid.innerHTML); // word ...
                 //
                 //event.dataTransfer.setData('text/html', grid.getVisibleData());
-                event.dataTransfer.setData('text/uri-list', "http://localhost:8080/?qry=" + encodeURIComponent(qry_)); // when placed outside dropZone ..
+                event.dataTransfer.setData('text/uri-list', "http://localhost:8081/?qry=" + encodeURIComponent(qry_)); // when placed outside dropZone ..
                 event.dataTransfer.setData('text/qry', JSON.stringify(qry)); // qry 2 qry
             }
       }
@@ -426,7 +426,7 @@
       <form method="post" action="/login" onsubmit="console.log('login.onsubmit');loginSend(this);return false;" >
         <script type="text/javascript">
 
-          loginId_current = "Bau_VM";
+          loginId_current = "Minoa_Local";
           loginId_refresh = 0;
 
           async function loginSend(formElem){

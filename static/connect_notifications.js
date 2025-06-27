@@ -43,7 +43,7 @@ function msg_init( delay = 3000 ) {
 
 async function msgConnection( callback) {
   xDebug('connectNotification', "connect_n::msgConnection");
-  url = new URL("http://localhost:8080/info");
+  url = new URL("http://localhost:8081/info");
   let text = null;
   try{
     let response = await fetch(url);
@@ -170,7 +170,7 @@ async function msg_notification_call( callback) {
   if (msg_wait) {
     xDebug('connectNotification', "still wait ..");
   } else {
-      url = new URL("http://localhost:8080/notification");
+      url = new URL("http://localhost:8081/notification");
       let text = null;
       let try_count = 0;
       if (msg_skipp_counter <= 0) {

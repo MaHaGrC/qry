@@ -1,6 +1,6 @@
   // https://javascript.info/fetch
-  // fetch("http://localhost:8080/size", {mode: "no-cors"}).then( response  => setData( response.text()  ));
-  // let response = await fetch("http://localhost:8080/size", {mode: "no-cors"});
+  // fetch("http://localhost:8081/size", {mode: "no-cors"}).then( response  => setData( response.text()  ));
+  // let response = await fetch("http://localhost:8081/size", {mode: "no-cors"});
   // https://stackoverflow.com/questions/43262121/trying-to-use-fetch-and-pass-in-mode-no-cors/43268098#43268098
 
 
@@ -218,7 +218,7 @@ async function data2Grid(grid, qry, callback = null, response = null, propForced
     toggle(grid.eGridBox,'grid-outdated',true);
   }
   if (!response) {
-      url = new URL("http://localhost:8080/query");
+      url = new URL("http://localhost:8081/query");
       url.searchParams.append("qry", qry);
       if (cmd_hint_sug_eSug && cmd_hint_sug_cur) url.searchParams.append("qrySug", cmd_hint_sug_cur); // for fast response triggered by suggestion if qry fails
       // TODO always???
@@ -317,7 +317,7 @@ function getUrl2GridAndHint(eGridOrGrid, hints = "", value = "", reload = true) 
 
 async function updateGridValue(grid, qry, val, id, callback, rowData) {
   xDebug('connect', "connect::updateGridValue");
-  url = new URL("http://localhost:8080/query");
+  url = new URL("http://localhost:8081/query");
   url.searchParams.append("qry", qry);
   url.searchParams.append("val", val);
   url.searchParams.append("id", id);
@@ -346,7 +346,7 @@ async function updateGridValue(grid, qry, val, id, callback, rowData) {
 
   function getSuggestionFromUrl(grid) {
     xDebug('connect', "connect::getSuggestionFromUrl");
-    let json = mockableXMLHttpRequest("http://localhost:8080/suggest?qry=" + encodeURIComponent(getQry2Grid(grid)));
+    let json = mockableXMLHttpRequest("http://localhost:8081/suggest?qry=" + encodeURIComponent(getQry2Grid(grid)));
     return json;
   }
 
@@ -433,7 +433,7 @@ async function updateGridValue(grid, qry, val, id, callback, rowData) {
   }
 
     async function recordSend(name = null) {
-        url = new URL("http://localhost:8080/rec");
+        url = new URL("http://localhost:8081/rec");
         url.searchParams.append("before", rec_session_old ?? "");
         url.searchParams.append("action", rec_msg ?? "");
         url.searchParams.append("after", rec_session ?? "");

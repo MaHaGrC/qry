@@ -191,7 +191,8 @@ public class DataConPostgres implements DataConnector{
 
 
     public QryResponse read(String query, Map<String, String> params) {
-        if (query.equals("dbTab") || query.startsWith("dbTab ") /*ignore changed-limit-clause / UPDATE ...*/) {
+        if (query.equals("dbTab") || query.startsWith("dbTab ") /*ignore changed-limit-clause / UPDATE ...*/
+                || query.equals("select * from dbTab") || query.startsWith("select * from dbTab ")) {
             // exclude views as they are usually expensive
             query = "select  /**DYNAMIC_SQL limit -1 **/ 'select tab, creationdate, lastmodified, cnt, ins_, upd_ from ( ' stmt " +
                     "union all " +
@@ -302,18 +303,22 @@ public class DataConPostgres implements DataConnector{
     }
 
     String  expand(String query, Map<String, String> params) {
-        if (!query.matches("(?is)select .*")) {
-            query = QrySyntax.expand( query);
-            query = "select * from " + query;
-        }
-        if (query.toLowerCase(Locale.ROOT).contains("\"limit\":")) { // extract hint ...
-            query = query.replaceFirst(" limit +[0-9,]*","") + query.replaceAll(".*\\b(limit)\"?:\\s*\"?([0-9,]+)\"?.*|.*"," $1 $2"); // select * from attribute  /*{ limit: "1,100" }*/     ==>     select * from attribute  /*{ limit: "1,100" }*/ limit 1,100
-        } else  if ( query.toLowerCase(Locale.ROOT).contains(" v_article") && query.toLowerCase(Locale.ROOT).contains(" where ")) {
-            main.notifyInfo("DataConPostgres.expand: skipp limit for v_article to prevent postgres slow down"); // limit will drastically slow down the query
-            // see    v_article W product = '3984p'
-            //  vs    select * from v_article where product = '3984p' limit 25
-        } else  if (!query.toLowerCase(Locale.ROOT).contains(" limit ")) {
-            query = query + " limit 25"; /* match connect.js::handleProp*/
+        if (query.equals("dbTab") || query.startsWith("dbTab ")) {
+            // skipp expanding - OR handle "select * from dbTab"
+        } else {
+            if (!query.matches("(?is)select .*")) {
+                query = QrySyntax.expand( query);
+                query = "select * from " + query;
+            }
+            if (query.toLowerCase(Locale.ROOT).contains("\"limit\":")) { // extract hint ...
+                query = query.replaceFirst(" limit +[0-9,]*","") + query.replaceAll(".*\\b(limit)\"?:\\s*\"?([0-9,]+)\"?.*|.*"," $1 $2"); // select * from attribute  /*{ limit: "1,100" }*/     ==>     select * from attribute  /*{ limit: "1,100" }*/ limit 1,100
+            } else  if ( query.toLowerCase(Locale.ROOT).contains(" v_article") && query.toLowerCase(Locale.ROOT).contains(" where ")) {
+                main.notifyInfo("DataConPostgres.expand: skipp limit for v_article to prevent postgres slow down"); // limit will drastically slow down the query
+                // see    v_article W product = '3984p'
+                //  vs    select * from v_article where product = '3984p' limit 25
+            } else  if (!query.toLowerCase(Locale.ROOT).contains(" limit ")) {
+                query = query + " limit 25"; /* match connect.js::handleProp*/
+            }
         }
         return query;
     }

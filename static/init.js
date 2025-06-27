@@ -269,7 +269,7 @@ function removeTooltipForce() {
 
 if (window.location.href.endsWith("/") || window.location.href.endsWith("/index.html")) {
     //createGridContainer('dbTab', {"valHndl":{"tab":"LINK"}, pos: {width: "400", height: "525"}} );
-    createGridContainer('v_dbTabusage limit 300 /*{"valHndl":{"tab":"LINK"}, "pos": {"width": "397", "height": "497"}, "cdm":"yes"}*/');
+    createGridContainer('dbTab /*{"valHndl":{"tab":"LINK"}, "pos": {"width": "300", "height": "550"}, "cdm":"yes"}*/');
     //createGridContainer('v_dbTabusage limit 300 /*{"valHndl":{"tab":"LINK"},"cdm":"yes"}*/');
     //createGridContainer('v_dbTabusageLinked', {"valHndl":{"tab":"LINK"}, pos: {width: "400", height: "525"}, "cdm": "yes"} );
     //createGridContainer('v_dbTabusageLinked /*{ "cdm": "none" }*/');
@@ -292,9 +292,9 @@ if (window.location.href.endsWith("/") || window.location.href.endsWith("/index.
     // {"qry":"app","prop":{"sortIdx":[[0,0],[25,"10000000","portal","portal"],[1,"10000002","export","export"],[3,"10000003","dam","dam"],[12,"10000004","portal","toolbox"],[15,"10000006","portal","toolbox"],[21,"10000007","portal","toolbox"],[16,"10000101","portal","\"module_admin\\;module_dam\\;module_export\\;module_workflow\\;toolbox\""],[18,"10000102","portal","toolbox"],[20,"10000103","portal","toolbox"],[17,"10000200","portal","toolbox"],[19,"10000201","portal","toolbox_framework"],[22,"10000202","portal","toolbox"],[23,"10000204","portal","\"toolbox_framework\\;module_dam\\;module_admin\""],[2,"10000300","workflow","workflow"],[4,"10000301","admin","admin"],[8,"10000302","dam","\"toolbox_framework\\;module_dam\\;module_admin\""],[13,"10000303","portal","toolbox_framework"],[24,"10000306","portal","toolbox_framework"],[5,"10000400","export","\"module_admin\\;module_dam\\;module_export\\;module_workflow\\;toolbox\""],[6,"10000401","workflow","\"module_admin\\;module_dam\\;module_export\\;module_workflow\\;toolbox\""],[9,"10000402","admin","\"module_admin\\;module_dam\\;module_export\\;module_workflow\\;toolbox\""],[14,"10000403","portal","toolbox"],[7,"10000500","dam","\"module_admin\\;module_dam\\;module_export\\;module_workflow\\;toolbox\""],[10,"10000600","admin","\"toolbox_framework\\;module_dam\\;module_admin\""],[11,"10010600","ssp","ssp"]],"colOrderIdx":[1,3,4,5],"pos":{"top":116,"left":621,"width":842,"height":564}}}
 
 } else if (true){
-    // handle http://localhost:8080/
-    // handle http://localhost:8080/?qry=article
-    // handle http://localhost:8080/index.html?qry=article
+    // handle http://localhost:8081/
+    // handle http://localhost:8081/?qry=article
+    // handle http://localhost:8081/index.html?qry=article
     var query = window.location.href.replaceAll(/^.*\/|.*\?qry=|\?qry=/g,"");
     if (query.includes("%")) {  // query: "ls%20-ltr"
     //if (query.startsWith("%")) {  // query: "%7B%22session%22%3A%22...........
