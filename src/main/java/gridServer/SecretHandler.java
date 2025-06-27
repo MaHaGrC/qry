@@ -207,15 +207,15 @@ public class SecretHandler {
 
             //InputStream inputStream = main.class.getClassLoader().getResourceAsStream("data/2023_iPIM_QRY.kdbx");
             try {
-                main.notifyInfo(keypassPathName + " opening ...");
+                main.notifyFine(keypassPathName + " opening ...");
                 InputStream inputStream = new FileInputStream(new File(keypassPathName));
                 DomDatabaseWrapper db = DomDatabaseWrapper.load(creds, inputStream);
                 DomGroupWrapper dbRootGroup = db.getRootGroup();
-                main.notifyInfo(keypassPathName + " extracting urls ...");
+                main.notifyFine(keypassPathName + " extracting urls ...");
                 for (SecrectCheck secrectCheck : kdbxRead(dbRootGroup, filter)) {
                     checksFutures.add(executorService.submit(secrectCheck));
                 }
-                main.notifyInfo(keypassPathName + " checking ... (" + checksFutures.size() + " urls)");
+                main.notifyFine(keypassPathName + " checking ... (" + checksFutures.size() + " urls)");
                 //
                 csvData.add("path,url,prio,result".split(","));
                 for (Future<SecrectCheck> checkFuture : checksFutures) {

@@ -1074,7 +1074,7 @@ html::-webkit-scrollbar-thumb:active {
 }
 
 .msgNew {
-    color: limegreen !important;
+    color: green !important;
     font-weight: bold;
     transition: transform 500ms ease-in-out 0s, opacity 500ms ease-in-out; /*nicht vererbbar*/
 }
@@ -1098,16 +1098,26 @@ html::-webkit-scrollbar-thumb:active {
     transition: transform 500ms ease-in-out 0s, opacity 500ms ease-in-out; /*nicht vererbbar*/
 }
 
-
 .msg_info {
-    transition: transform 500ms ease-in-out 0s, opacity 500ms ease-in-out; /*nicht vererbbar*/
+  transition: transform 500ms ease-in-out 0s, opacity 500ms ease-in-out; /*nicht vererbbar*/
   color: lightgrey;
 }
 
 .msg_important {
-    color: lightgreen;
+    color: limegreen;
     transition: transform 500ms ease-in-out 0s, opacity 500ms ease-in-out; /*nicht vererbbar*/
 }
+
+.msg_debug {
+  transition: transform 500ms ease-in-out 0s, opacity 500ms ease-in-out; /*nicht vererbbar*/
+  color: lightgrey;
+}
+
+.msg_fine {
+  transition: transform 500ms ease-in-out 0s, opacity 500ms ease-in-out; /*nicht vererbbar*/
+  color: lightgrey;
+}
+
 
 .context {
     font-family: Verdana;

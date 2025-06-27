@@ -148,6 +148,14 @@ public class main {
         main.notifications.add( jsn_msg);
     }
 
+    public static void notifyFine(String msg) {
+        System.out.println("FINE  " + msg);
+        //main.notifications.add("{ \"info\": { \"msg\": \"" + msg.replace("\"","\\\"").replaceAll("[\n\r]+","\\\\n") +"\"}}"); <<< all in one will create sometimes issues for rapidoid
+        JSONObject jsn = (new JSONObject()).put("fine", (new JSONObject()).put("msg", msg));
+        String jsn_msg = jsn.toString();
+        main.notifications.add( jsn_msg);
+    }
+
 
     public static void createNewDatabase(String fileName) {
 
@@ -360,7 +368,7 @@ public class main {
                             }
                         }
                     }
-                    notifyInfo("saved upload(s)");
+                    notifyFine("saved upload(s)");
                 } else {
                     String fileName = req.posted().get("fileName").toString();
                     String data = req.posted().get("data").toString();
@@ -529,7 +537,7 @@ public class main {
                                 //qry = URLDecoder.decode(qry);
                                 params.put(qry, qry.trim());
 
-                                notifyInfo("BE received request " + params.toString());
+                                notifyFine("BE received request " + params.toString());
                                 String login = getLogin(params);// TRICKY set currentConnection
                                 // always offer login once ...
                                 //    adding VM-Connection automatically will ensure that login is done once ...

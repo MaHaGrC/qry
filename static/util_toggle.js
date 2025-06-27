@@ -28,7 +28,7 @@
     //
   function toggle( elemId, itemOrList, initVal = null ) {
     invert = !( initVal ?? true );
-    //xLog('utilToggle', "toggle " + (elemId.id ?? elemId) + ' "' + itemOrList + '"' + " ..");
+    //xLog('utilToggle', "toggle " + (elemId ? elemId.id ?? elemId : "") + ' "' + itemOrList + '"' + " ..");
     let elem = elemFromElemOrId( elemId );
     //xLog('utilToggle', "toggle " + (undefined == elem ? "undefined" : elem.id ?? elem.classList.join(" ") ) + ' "' + itemOrList + '"' + " " + initVal + " ...");
     if (undefined == itemOrList && undefined != elem && null == initVal ) {

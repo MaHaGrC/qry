@@ -51,7 +51,7 @@ public class Cache implements DataConnector {
         try {
             if (query.startsWith("{")) {
 
-                main.notifyInfo("Cache.qryResponse Synonyme for Session set / read - return Session");
+                main.notifyFine("Cache.qryResponse Synonyme for Session set / read - return Session");
                 data = query;
                 qryResponse.setData(data);
 

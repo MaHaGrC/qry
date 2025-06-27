@@ -151,11 +151,11 @@ public class DataConSSH implements DataConnector{
             ((ChannelExec)channel).setErrStream(System.err);
             //
             String cmd = expand(query, params);
-            main.notifyInfo("DataConSSH w HINT: " + cmd);
+            main.notifyFine("DataConSSH w HINT: " + cmd);
             data.setExecutedStmt(cmd);
             // hide comment ... ???
             cmd = cmd.replaceAll("\\s*#?\\s*/\\*\\{\\s*\".*",""); // remove "expanded" hints, but leave hints in QryResponse to inject HINT for GUI
-            main.notifyInfo("DataConSSH       : " + cmd);
+            main.notifyFine("DataConSSH       : " + cmd);
             ((ChannelExec)channel).setCommand(cmd);
             channel.connect();
             //
@@ -222,7 +222,7 @@ public class DataConSSH implements DataConnector{
         String msg = null;
         if (matcher.matches() && !query.contains(" RAW") && (null == data.getHint() || !data.getHint().contains("RAW"))) {
 
-            main.notifyInfo("Log-File detected");
+            main.notifyFine("Log-File detected");
             data.appendRow(new String[]{"date", "level", "logger", "thread", "msg"});
             String date = "";
             String level = "";
@@ -260,7 +260,7 @@ public class DataConSSH implements DataConnector{
             Matcher matcher = pattern.matcher(row2);
             if (matcher.matches() && !query.contains(" RAW") && (null == data.getHint() || !data.getHint().contains("RAW"))) {
 
-                main.notifyInfo("ls-long detected");
+                main.notifyFine("ls-long detected");
                 data.appendRow(new String[]{"type", "rights", "links", "owner", "group", "size", "date", "name", "target"});
                 msg = "";
                 String fileType = "";

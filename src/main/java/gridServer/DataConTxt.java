@@ -124,7 +124,7 @@ public class DataConTxt implements DataConnector{
             File file2 = new File(fileName);
             file2.delete();
             file.renameTo(file2);
-            main.notifyInfo(   (insertRow ? "inserted " : "updated ") + fileName + "[" + row + ", " + col + "]");
+            main.notifyFine(   (insertRow ? "inserted " : "updated ") + fileName + "[" + row + ", " + col + "]");
         }
     }
 

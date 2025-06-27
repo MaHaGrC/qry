@@ -82,18 +82,24 @@ function msg_notification_level( level, msg ) {
     msg_div = document.getElementById("msg_notification");
     let elem = null;
     if (msg) {
-        if (" info debug warning warn error stmt important ".includes(" "+level+" ") ) {
+        if (" info debug warning warn error stmt important fine debug ".includes(" "+level+" ") ) {
             elem = document.createElement("div");
             elem.classList.add("msg_" + level);
-            e_prefix = "error" == level ? "ERR " : "warning" == level || "warn" == level  ? "WRN " :  "stmt" == level ? "stmt" : "important" == level ? "IMP " : "";
+            e_prefix = "error" == level ? "ERR " : "warning" == level || "warn" == level  ? "WRN "
+                        : "stmt" == level ? "stmt" : "important" == level ? "IMP "
+                    : "debug" == level ? "DBG " : "fine" == level ? "DBG "
+                        : "info" == level ? ""  : "";
             elem.innerHTML = e_prefix + (msg && msg.replace ? msg.replace(" ","&nbsp;") : msg); // Uncaught (in promise) TypeError: msg.replace is not a function
             elem.onclick = function() {toggle(this,'REMOVE')};
-            if (e_prefix.startsWith("E") || e_prefix.startsWith("W")) {
+            if (e_prefix.startsWith("E") || e_prefix.startsWith("W") || e_prefix.startsWith("I") || "info"==level) {
                 msg_div.insertBefore(elem, msg_div.firstChild);
             } else {
                 msg_div.appendChild(elem);
             }
-            toggle(elem,  e_prefix.startsWith("E") || e_prefix.startsWith("W") || e_prefix.startsWith("I") ? "+msgNew 1000 -msgNew 20000 REMOVE_SLOW" : "+msgNew 1000 -msgNew 5000 REMOVE_SLOW");
+            let cssVisibleTime = e_prefix.startsWith("E") || e_prefix.startsWith("W") || e_prefix.startsWith("I") || "info"==level
+                    ? 20000 : e_prefix.startsWith("D") ? 1000 : 5000;
+            let cssNewTime = e_prefix.startsWith("D") ? "" : "+msgNew " + ( cssVisibleTime / 5 ) + " -msgNew";
+            toggle(elem,  cssNewTime + " " + cssVisibleTime + " REMOVE_SLOW");
             // KLUDGE - bring Login-dialog to front ... {"warn":{"msg":"'FD_INTEG' unknown (HINT: login once 0)"}}
             // or just at startup ...
             if (msg && msg.includes && msg.includes("HINT: login once")) {

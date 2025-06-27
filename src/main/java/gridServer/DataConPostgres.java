@@ -174,7 +174,7 @@ public class DataConPostgres implements DataConnector{
                 String columnName = rs.getMetaData().getColumnName( col+1 );
 
                 sql = "update " + qry + " set " + columnName + " = '" + val + "' where " + columnId + " ='" + row + "'";
-                main.notifyInfo(sql);
+                main.notifyFine(sql);
                 stmt.executeUpdate( sql);
                 conn.close();
 
@@ -242,12 +242,12 @@ public class DataConPostgres implements DataConnector{
 
                 Statement stmt = conn.createStatement();;
                 sql = expand( query, params);
-                main.notifyInfo("DataConPostgres: " + sql);
+                main.notifyFine("DataConPostgres: " + sql);
                 data.setExecutedStmt(sql);
                 //stmt.executeUpdate(sql)
                 ResultSet rs = null;
                 try{
-                    main.notifyInfo("DataConPostgres: .... execute ");
+                    main.notifyFine("DataConPostgres: .... execute ");
                     try {
                         rs = stmt.executeQuery(sql);
                     } catch (SQLException e) {
@@ -259,9 +259,9 @@ public class DataConPostgres implements DataConnector{
                             throw e;
                         }
                     }
-                    main.notifyInfo("DataConPostgres: ... DONE  with OK");
+                    main.notifyFine("DataConPostgres: ... DONE  with OK");
                 } finally {
-                    main.notifyInfo("DataConPostgres: ... DONE finally");
+                    main.notifyFine("DataConPostgres: ... DONE finally");
                 }
                 int colCount = rs.getMetaData().getColumnCount();
                 for (int i = 1; i <= colCount ; i++) {
@@ -313,7 +313,7 @@ public class DataConPostgres implements DataConnector{
             if (query.toLowerCase(Locale.ROOT).contains("\"limit\":")) { // extract hint ...
                 query = query.replaceFirst(" limit +[0-9,]*","") + query.replaceAll(".*\\b(limit)\"?:\\s*\"?([0-9,]+)\"?.*|.*"," $1 $2"); // select * from attribute  /*{ limit: "1,100" }*/     ==>     select * from attribute  /*{ limit: "1,100" }*/ limit 1,100
             } else  if ( query.toLowerCase(Locale.ROOT).contains(" v_article") && query.toLowerCase(Locale.ROOT).contains(" where ")) {
-                main.notifyInfo("DataConPostgres.expand: skipp limit for v_article to prevent postgres slow down"); // limit will drastically slow down the query
+                main.notifyFine("DataConPostgres.expand: skipp limit for v_article to prevent postgres slow down"); // limit will drastically slow down the query
                 // see    v_article W product = '3984p'
                 //  vs    select * from v_article where product = '3984p' limit 25
             } else  if (!query.toLowerCase(Locale.ROOT).contains(" limit ")) {
