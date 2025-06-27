@@ -148,7 +148,7 @@ https://www.w3schools.com/cssref/playdemo.php?filename=playcss_justify-self
   height: 1em; /* KLUDGE to suppress multiline due to overflow by icons on small columns ... -> TODO use overlay to handle icons */
   position: sticky;
   top: 0;
-  background: white;
+  /*background: white;*/
   display: flex;
   justify-content: space-between;
 }
@@ -191,6 +191,7 @@ https://www.w3schools.com/cssref/playdemo.php?filename=playcss_justify-self
   /* overflow: auto;    ....needed to get resize corner ... --> so keep grid always with proper max-height and everything is good ;-( */
   overflow: hidden; /*prevent scorllbar & toggle resizeObserver on entering by overflow */
   scrollbar-width: none;
+  background: aliceblue;
 }
 
 .grid-resizeOrMove {
@@ -322,7 +323,7 @@ https://www.w3schools.com/cssref/playdemo.php?filename=playcss_justify-self
 
 .icon-inactiv , .fa-sort{
   /*color: lightgray;*/
-  color: white;
+  color: aliceblue;
   transition: color 200ms ease-in-out;
   /*-webkit-text-stroke: 1px white; *//* simulate light */
 }
@@ -872,9 +873,9 @@ html::-webkit-scrollbar-thumb:active {
   margin: auto; /* center */
   margin-top: 5px; /* */
   height: auto; /* fit to text -- could be set fixed value to scroll */
- 	border: white 1px solid; /* prevent wobbeling */
+  border: aliceblue 1px solid; /* prevent wobbeling */
   border-radius: 5px;
-  
+  background: aliceblue;
 }
 
 .CodeMirror:not(.cdm_hint_auto_sug):hover {
