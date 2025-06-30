@@ -3,6 +3,7 @@ html, body {
   width: 100%;
   margin: 0;
   background: #f8f8ff;
+  font-family: Inter,Helvetica,Arial,sans-serif
 }
 
 
@@ -243,7 +244,6 @@ https://www.w3schools.com/cssref/playdemo.php?filename=playcss_justify-self
     height: 50px;
     text-align: center;
     vertical-align: middle;
-    font-family: verdana, sans-serif;
     font-size: small;
     color: gray;
     z-index: 1000;
@@ -255,7 +255,6 @@ https://www.w3schools.com/cssref/playdemo.php?filename=playcss_justify-self
 
 #resizeFramePure {
   text-align: center;
-  font-family: Verdana;
   font-size: 9px;
   color: #10b8ee;
   /*padding: 5px;*/
@@ -550,7 +549,7 @@ ul, #myUL {
 
 .cmc-item-descr {
     white-space: nowrap;
-    font-family: Arial, sans-serif;
+    /*font-family: Arial, sans-serif;*/
     font-size: 13px;
 }
 
@@ -898,11 +897,16 @@ html::-webkit-scrollbar-thumb:active {
   margin-top: -50px;
   margin-left: -100px;
   z-index: 1000000;
-  background: white;
+  background: aliceblue;
   padding: 0px 20px 0px 20px;
   border: 1px solid lightblue;
   border-radius: 5px;
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+#LoginExpand, #LoginColapse {
+  color: #778899;
+  font-size: small;
 }
 
 #login .bntClose {
@@ -1038,7 +1042,7 @@ html::-webkit-scrollbar-thumb:active {
 	left: 70px;
 	z-index: 100;
 	bottom: 10px;
-    font-family: Verdana;
+    /*font-family: Verdana;*/
     font-size: 9px;
     transition: transform 500ms ease-in-out 0s, opacity 500ms ease-in-out; /*nicht vererbbar*/
 }
@@ -1069,13 +1073,13 @@ html::-webkit-scrollbar-thumb:active {
 }
 
 #msg_notification_div {
-    font-family: Verdana;
+    /*font-family: Verdana;*/
     font-size: 9px;
     transition: transform 500ms ease-in-out 0s, opacity 500ms ease-in-out; /*nicht vererbbar*/
 }
 
 .msgNew {
-    color: green !important;
+    /* color: green !important; */
     font-weight: bold;
     transition: transform 500ms ease-in-out 0s, opacity 500ms ease-in-out; /*nicht vererbbar*/
 }
@@ -1101,11 +1105,11 @@ html::-webkit-scrollbar-thumb:active {
 
 .msg_info {
   transition: transform 500ms ease-in-out 0s, opacity 500ms ease-in-out; /*nicht vererbbar*/
-  color: lightgrey;
+  color: lightslategrey;
 }
 
 .msg_important {
-    color: limegreen;
+    color: blue;
     transition: transform 500ms ease-in-out 0s, opacity 500ms ease-in-out; /*nicht vererbbar*/
 }
 
@@ -1121,7 +1125,7 @@ html::-webkit-scrollbar-thumb:active {
 
 
 .context {
-    font-family: Verdana;
+    /*font-family: Verdana;*/
     font-size: 9px;
     transition: transform 500ms ease-in-out 0s, opacity 500ms ease-in-out;
 }
@@ -1233,7 +1237,7 @@ a:active {
 }
 
 .stmt {
-  font-family: Verdana;
+  /*font-family: Verdana;*/
   font-size: 9px;
 }
 

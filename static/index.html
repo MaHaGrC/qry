@@ -495,8 +495,10 @@
           </div>
           <p>
             <input id="loginId" type="text" name="loginId" value="" placeholder="Login | <3char-project>_[VM|INTEG|LIVE]" required oninput="loginUpdate();">
-            <div id="LoginExpand"> Hint: use [project]_[VM|INTEG|POC|LIVE] with Keypass-Password  <div class="fa fa-expand bntClose" style="float:right;padding-left:30px" onclick="document.getElementById('loginDetails').style.display='block';document.getElementById('loginUrl').style.display='block';document.getElementById('LoginColapse').style.display='block';document.getElementById('LoginExpand').style.display='none';"></div></div>
-            <div id="LoginColapse" style="display: none "> Hint: colapse to use Credentials from Keypass  <div class="fa fa-compress bntClose" style="float:right" onclick="document.getElementById('loginDetails').style.display='none';document.getElementById('loginUrl').style.display='none';document.getElementById('LoginColapse').style.display='none';document.getElementById('LoginExpand').style.display='block';"></div></div>
+            <div id="LoginExpand"><div class="fa fa-chevron-down" style="float:left;padding-right:5px" onclick="document.getElementById('loginDetails').style.display='block';document.getElementById('loginUrl').style.display='block';document.getElementById('LoginColapse').style.display='block';document.getElementById('LoginExpand').style.display='none';"></div>
+              Hint: use [project]_[VM|INTEG|POC|LIVE] and Keypass-Password </div>
+            <div id="LoginColapse" style="display: none "><div class="fa fa-chevron-up" style="float:left;padding-right:5px" onclick="document.getElementById('loginDetails').style.display='none';document.getElementById('loginUrl').style.display='none';document.getElementById('LoginColapse').style.display='none';document.getElementById('LoginExpand').style.display='block';"></div>
+              Hint: colapse to use Credentials from Keypass  </div>
           </p>
           <p id="loginDetails" style="display: none" >
             <input id="loginScheme" type="text" name="scheme" value="" placeholder="scheme" oninput="loginUpdate();">
@@ -521,7 +523,7 @@
 
     <!---------- TOP -------->
 
-    <div id="msg_notification_div" class="" onclick="toggle('log_div 5000 #log_div_open');" style="position: absolute;left: 50px;top: 5px;display: block">
+    <div id="msg_notification_div" class="" onclick="toggle('log_div 5000 #log_div_open');" style="position: fixed;left: 50px;bottom: 50px;display: block">
       <div id="msg_notification">
       </div>
     </div>
