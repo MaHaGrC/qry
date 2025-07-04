@@ -2,6 +2,7 @@
   const resizeFrameContent = document.querySelector('#resizeFrameContent');
   let dragResizeElement = null;
   let dragResizeHandle = null;
+  let drag_initial_pos = null;
   let dre_offset_x, dre_offset_y;
   let dre_padBorder = { left: 1, top: 1, right: 2*(1+20), bottom: 2*1+5+10 }; // default padding and border - KLUDGE ...
   let resizeObserverSkippInitialCall = new Set();
@@ -202,7 +203,7 @@
         if (dragResizeElement.grid && dragResizeElement.grid.eGridBox) {
             let grid = dragResizeElement.grid;
             if (grid.items.length > 0){
-                    grid.resizeInnerGrid( true );
+                    grid.resizeInnerGrid( true, drag_initial_pos );
                     setTimeout( function(){ grid.resizeInnerGrid(); }, 100); // KLUDGE: wait for rendering / use window.getComputedStyle(e)
             }
         }
@@ -422,6 +423,7 @@
           console.log("drd resizeObserver: " + entry.target.id + " init EventListener  mouseup");
           window.addEventListener('mouseup', resizeObserverResizeFinished);
           dragResizeElement = entry.target;
+          drag_initial_pos = getLRTBValues(entry.target.style);
         }
         toggle(dragResizeElement, 'dragging', true);
         resizeFrameTo(dragResizeElement);

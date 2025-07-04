@@ -491,7 +491,7 @@
 
         </script>
         <div style="width: 100%">
-            <h1 >Login<i id="LoginCloseButton"  class="fa fa-window-close bntClose" onclick="document.getElementById('loginResponse').innerHTML='';document.getElementById('login').style.display = 'none'; "></i></h1>
+            <h1 >Login<i id="LoginCloseButton"  class="fa fa-window-close bntClose" style="margin-top: 0px" onclick="document.getElementById('loginResponse').innerHTML='';document.getElementById('login').style.display = 'none'; "></i></h1>
           </div>
           <p>
             <input id="loginId" type="text" name="loginId" value="" placeholder="Login | <3char-project>_[VM|INTEG|LIVE]" required oninput="loginUpdate();">
@@ -509,7 +509,7 @@
           <p><input id="loginUrl" type="text" name="url" size="100" value="" placeholder="URL scheme://usr:pwd@host:port/path" required  style="display: none" ></p>
           <p>
               <input id="userPwd" type="password" name="userPwd" value="" placeholder="Password" required>
-              <div id="loginResponse"></div>
+              <div id="loginResponse" style="font-size: small;color: red"></div>
           </p>
           <div>
             <p class="submit" style="float:left; margin-left: 20px" ><input type="submit" name="commit" value="Login" onclick="loginId_refresh=-1;"></p>

@@ -6,9 +6,9 @@ html, body {
   font-family: Inter,Helvetica,Arial,sans-serif
 }
 
-
-
-
+h1 {
+  font-size: large;
+}
 
 
 /*
@@ -881,7 +881,9 @@ html::-webkit-scrollbar-thumb:active {
  	border: lightgray 1px solid;
 }
 
-
+.CodeMirror-scrollbar-filler {
+  background: transparent;
+}
 
 /*
 

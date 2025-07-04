@@ -415,10 +415,11 @@ public class main {
 
 
                         if (urlHelper.getHost().isEmpty()) {
-                            if (login.toUpperCase().endsWith("VM")  || login.toUpperCase().endsWith("Local")
-                                    || login.toUpperCase().endsWith("Docker") ) {
+                            if (login.toUpperCase().endsWith("VM")  || login.toUpperCase().endsWith("LOCAL")
+                                    || login.toUpperCase().endsWith("DOCKER") ) {
                                 main.notifyInfo( "try generate from login-name (empty host, no matching keypass)");
                                 UrlHelper urlHelper2 = getVMUrl(login);
+                                urlHelper2.setUserPwd( urlHelper.getUserPwd() ); // take over PWD
                                 main.notifyInfo( "try credentials from login-name (" + urlHelper2.getUrlMaskedPWD() + ")");
                                 if (null != urlHelper2){
                                     urlHelper = urlHelper2;
@@ -765,13 +766,13 @@ public class main {
     private static UrlHelper getVMUrl(String login) {
         UrlHelper urlHelper2 = new UrlHelper(login);
         // jdbc:postgresql://pagen@192.168.56.114:5432/pagen
-        // Minoa_Local::jdbc:postgresql://minoa@localhost:5432/minoa
+        // Minoa_Local::jdbc:postgresql://minoa:<pwd>@localhost:5432/minoa
         urlHelper2.setHost("localhost");
         String userName = (login.replaceAll("_.*","").toLowerCase() ).trim();
         urlHelper2.setUserName( userName);
         urlHelper2.setUserPwd( userName + userName);
         urlHelper2.setPort(5432);
-        urlHelper2.setPath("/"+ "changeMe");
+        urlHelper2.setPath("/"+ userName);
         urlHelper2.setScheme("jdbc:postgresql");
         return urlHelper2;
     }

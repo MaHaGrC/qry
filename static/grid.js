@@ -293,7 +293,7 @@ class Grid {
   }
 
   // todo: @martin zur optimierung
-  resizeInnerGrid( handleNotUpdatedGetBoundingClientRect = false ) {
+  resizeInnerGrid( handleNotUpdatedGetBoundingClientRect = false, initial_pos = null ) {
     const gridContainer = this.eGrid;
     const gridBox = this.eGridBox;
 
@@ -319,9 +319,20 @@ class Grid {
     }
 
 
-    // Prüfen wie viele ch spalten mit Prozentwerten ersetzt werden müssen
+    // Prüfen wie viele ch Spalten mit Prozentwerten ersetzt werden müssen
     if (true || handleNotUpdatedGetBoundingClientRect) {
+
         console.warn("grid.resizeInnerGrid - DISABLED for cols");
+
+        // enlarging (!) width with a compact size type (innerGrid.width < gridBox.width) means switch to auto-fit
+        if ( initial_pos && initial_pos.width && initial_pos.width < gridBox.clientWidth
+                && 2 != Math.abs(this.colSizeType) ) {
+            xLog('grid', "resizeInnerGrid - switch to auto-fit - as width was enlarged from "
+                + initial_pos.width + " to " + gridBox.clientWidth);
+            this.colSizeType = 2; // set to auto-fit
+            this.resizeCols();
+        }
+
     } else {
         const colsArray = gridContainer.style.gridTemplateColumns.split(" ");
         const colsToChange = colsArray.reduce((count, str) => {
