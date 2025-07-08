@@ -1267,6 +1267,11 @@ a:active {
    scroll
 */
 
+.grid-with-filter.pinned {
+  background: #f8f8ff;
+  border: 1px solid #f8f8ff;
+}
+
 .grid-with-filter {
     overflow-y: hidden;
 }

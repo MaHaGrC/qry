@@ -352,7 +352,7 @@
           <i class="dragHandleBtn bntClose fa fa-window-close"           style="font-size:15px;float: right;margin-top: -9px;padding-right: 10px"  data-tooltip="close grid"   onclick="controller(this.parentNode.parentNode,'CLOSE:');return false;"></i>
           <i class="dragHandleBtn bntClose fas fa-external-link-alt"     style="font-size:15px;float: right;margin-top: -9px;margin-right: -5px" data-tooltip="open as popup window"  onclick="controller(this.parentNode.parentNode,'GRID:NEWTAB:');return false"></i>
           <i class="dragHandleBtn bntClose fa fa-keyboard"               style="font-size:15px;float: right;margin-top: -9px;padding-right: 10px"  data-tooltip="hide input"   onclick="getUrl2GridAndHint(this,'cdm','::toggle',false) ; return false"></i>
-          <i class="dragHandleBtn bntClose fas fa-grip-lines"            style="font-size:15px;float: right;margin-top: -9px;padding-right: 5px"  data-tooltip="pin handle (ctrl - apply for all new too)" onclick="elem=toggle(this.parentNode,'dragHandleFix');removeTooltipForce();if (event.ctrlKey) dragHandleFix=elem.classList.includes(dragHandleFix);return false;"></i>
+          <i class="dragHandleBtn bntClose fas fa-grip-lines"            style="font-size:15px;float: right;margin-top: -9px;padding-right: 5px"  data-tooltip="pin handle (ctrl - apply for all new too)" onclick="elem=toggle(this.parentNode,'dragHandleFix');toggle(this.parentNode.parentNode,'pinned');removeTooltipForce();if (event.ctrlKey) dragHandleFix=elem.classList.includes('dragHandleFix');return false;"></i>
         </div>
         <div  class="contextAndCM"  style="clear: both;">
         <div  class="context"  style=" width: 47px; color: lightblue;  float: left;margin-top: 5px;margin-right: 5px">
