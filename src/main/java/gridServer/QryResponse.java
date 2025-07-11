@@ -7,6 +7,7 @@ import org.rapidoid.http.Req;
 import java.io.Serializable;
 import java.nio.file.attribute.FileTime;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 public class QryResponse implements Serializable {
@@ -70,6 +71,13 @@ public class QryResponse implements Serializable {
         }
         data += s;
     }
+
+    public void appendRows(List<String[]> rows) {
+        for (String[] row : rows) {
+            appendRow(row);
+        }
+    }
+
 
     public void appendRow(String[] cols) {
         String row = "";

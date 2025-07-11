@@ -2,7 +2,6 @@ package gridServer;
 
 import com.opencsv.*;
 import com.opencsv.exceptions.CsvException;
-import org.hsqldb.lib.LineReader;
 
 import java.io.*;
 import java.util.Arrays;
@@ -21,6 +20,111 @@ public class DataConCSV implements DataConnector{
         return  (fileName.contains("/") ? "" : dataDir ) + fileName + (fileName.contains(".") ? "" : ".csv");
     }
 
+    static class CSVConfig {
+
+        public String delimiter;
+        public String quote;
+        public String escape;
+        public String encoding = "UTF-8";
+        public String lineSeparator = System.lineSeparator();
+        public String fileName = "";
+        public char commentMarker = '#';
+        public boolean skipLines = false;
+        public boolean ignoreLeadingWhiteSpace = true;
+        public boolean ignoreEmptyLines = true;
+        public boolean ignoreQuotations = false;
+        public boolean trim = true;
+
+        private FileInputStream fis;
+        private InputStreamReader reader;
+        private FileOutputStream fos;
+        private OutputStreamWriter writer;
+        private ICSVWriter csvWriter;
+        private CSVReader csvReader;
+
+        public CSVConfig(String delimiter, String quote, String escape) {
+            this.fileName = "";
+            this.delimiter = delimiter;
+            this.quote = quote;
+            this.escape = escape;
+        }
+
+        public CSVConfig(String fileName) {
+            this.fileName = fileName;
+        }
+
+
+        public String getFirstLine() {
+            try (BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
+                return reader.readLine();
+            } catch (IOException e) {
+                e.printStackTrace();
+                return "";
+            }
+        }
+
+        private void initQuoteDelimiterEscape() {
+            // assume the first line is a header and contains all information
+            String firstLine = getFirstLine();
+            // assume start with quote if quote is used
+            quote = firstLine.substring(0, 1).replaceAll("[^\"']","");
+            // assume if quote is used, before or after a quote we find the delimiter
+            String quoteAndDelim = firstLine.replaceAll("[^,;|" + quote + "]","");
+            delimiter = quoteAndDelim.replaceAll(quote+quote,"").substring(0,1);
+            // assume escape is "\\"
+            escape = "\\";
+        }
+
+        public CSVParser createParser(){
+            if (null == delimiter || delimiter.isEmpty()) {
+                initQuoteDelimiterEscape();
+            }
+            return new CSVParserBuilder()
+                    .withSeparator(delimiter.charAt(0))
+                    .withQuoteChar(quote.isEmpty() ? CSVWriter.NO_QUOTE_CHARACTER : quote.charAt(0))
+                    .withEscapeChar(escape.charAt(0))
+                    .build();
+        }
+
+        public CSVReader getReader() throws FileNotFoundException, UnsupportedEncodingException {
+            fis = new FileInputStream(fileName);
+            reader = new InputStreamReader(fis, encoding);
+            csvReader = new CSVReaderBuilder(reader)
+                    .withCSVParser( createParser() )
+                    .withSkipLines( skipLines ? 1 : 0)
+                    .build();
+            return csvReader;
+        }
+
+        public ICSVWriter getWriter() throws FileNotFoundException, UnsupportedEncodingException {
+            fos = new FileOutputStream(fileName);
+            writer = new OutputStreamWriter( fos, encoding);
+            csvWriter = new CSVWriterBuilder(writer)
+                    .withSeparator(delimiter.charAt(0))
+                    .withQuoteChar(quote.isEmpty() ? CSVWriter.NO_QUOTE_CHARACTER : quote.charAt(0))
+                    .withEscapeChar(escape.charAt(0))
+                    .build();
+            return csvWriter;
+        }
+
+        public void close() throws IOException {
+            if (null != fis) fis.close();
+            if (null != reader) reader.close();
+            if (null != csvReader) csvReader.close();
+            if (null != fos) fos.close();
+            if (null != writer) writer.close();
+            if (null != csvWriter) csvWriter.close();
+            fis = null;
+            reader = null;
+            csvReader = null;
+            fos = null;
+            writer = null;
+            csvWriter = null;
+        }
+
+
+    }
+
     @Override
     public QryResponse run(String qry, Map<String, String> params, QryResponse qryResponse) {
         String fileName = qry;
@@ -35,11 +139,12 @@ public class DataConCSV implements DataConnector{
             } else if (null != id && id.matches("[0-9]+") && (null == params.get("val") || params.get("val").isEmpty() )) {
                 insertRowCSV(fileName, Integer.valueOf(id));
             }
-            data = load(fileName);
+            List<String[]> allRows = load(fileName, qryResponse);
+            qryResponse.appendRows( allRows);
         } else {
             main.notifyError("file does not exists: " + completeFileName(fileName)  );
         }
-        return new QryResponse(params, data);
+        return qryResponse;
     }
 
 
@@ -56,34 +161,31 @@ public class DataConCSV implements DataConnector{
     }
 
 
-    String load(String fileName) {
-        StringBuffer data = new StringBuffer();
+
+
+    static List<String[]> load(String fileName, QryResponse qryResponse) {
+        
+        List<String[]> allRows = null;
         System.out.println( fileName + " load");
         if (fileName.matches("[a-zA-Z0-9_.-]+")) {
 
-            File file = new File("data/" + fileName + (fileName.contains(".") ? "" : ".csv"));
-            try (FileInputStream reader = new FileInputStream(file)) {
-                LineReader lineReader = new LineReader(reader, "UTF-8");
-                while (true) {
-                    String line = lineReader.readLine();
-                    if (null == line) break;
-                    //
-                    data.append(line + System.lineSeparator());
-                    // log
-                    line = line.substring(1, line.length() - 1); // cut away "
-                    String[] vals = line.split("\";\""); //CSV.split(line);
-                    for (String val : vals) {
-                        System.out.print(val + " <<>> ");
-                    }
-                    System.out.println();
-                }
-                lineReader.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
 
+            try {
+                CSVConfig csvConfig = new CSVConfig(
+                        "data/" + fileName + (fileName.contains(".") ? "" : ".csv"));
+                CSVReader csvReader = csvConfig.getReader();
+                // Read all lines
+                allRows = csvReader.readAll();
+                //
+                csvConfig.close();
+
+            } catch (IOException | CsvException e) {
+                e.printStackTrace();
+                main.notifyError(e.getMessage());
+            }
+            
         }
-        return data.toString();
+        return allRows;
     }
 
 
@@ -93,29 +195,17 @@ public class DataConCSV implements DataConnector{
         if (fileName.matches("[a-zA-Z0-9_.-]+")) {
             fileName = completeFileName(fileName);
 
-            // Read existing file
-            CSVReader reader = null;
-
             try {
-                reader = new CSVReaderBuilder(new FileReader(fileName)).build();
-                List<String[]> csvBody = reader.readAll();
-                // TODO improve...
-                // retry with different delimiter ...
-                if (csvBody.get(row).length - 1  < col || 1 == csvBody.get(0).length ){
-                    String headline = String.join(",", csvBody.get(0));
-                    char delimiter=  headline.replaceAll("^.*([,;|]).*","$1").charAt(0);
-                    reader = new CSVReaderBuilder(new FileReader(fileName)).withCSVParser(new CSVParserBuilder().withSeparator(delimiter).build()).build();
-                    csvBody = reader.readAll();
-                }
-                // get CSV row column  and replace with by using row and column
-                csvBody.get(row)[col] = replace;
-                reader.close();
-
-                // Write to CSV file which is open
-                ICSVWriter writer = new CSVWriterBuilder(new FileWriter(fileName)).build();
-                writer.writeAll(csvBody);
+                CSVConfig csvConfig = new CSVConfig(fileName);
+                CSVReader reader = csvConfig.getReader();
+                List<String[]> data = reader.readAll();
+                //
+                data.get(row)[col] = replace;
+                //
+                ICSVWriter writer = csvConfig.getWriter();
+                writer.writeAll(data);
                 writer.flush();
-                writer.close();
+                csvConfig.close();
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
                 main.notifyError(e.getMessage());
@@ -136,22 +226,20 @@ public class DataConCSV implements DataConnector{
             fileName = completeFileName(fileName);
 
             // Read existing file
-            CSVReader reader = null;
             try {
-                reader = new CSVReaderBuilder(new FileReader(fileName)).build();
-                List<String[]> csvBody = reader.readAll();
-                // get CSV row column  and replace with by using row and column
-                reader.close();
-
-                String[] cells = new String[csvBody.get(0).length];
+                CSVConfig csvConfig = new CSVConfig(fileName);
+                CSVReader reader = csvConfig.getReader();
+                List<String[]> data = reader.readAll();
+                //
+                String[] cells = new String[data.get(0).length];
                 Arrays.fill(cells, "");
-                csvBody.add(row,cells);
-
-                // Write to CSV file which is open
-                ICSVWriter writer = new CSVWriterBuilder(new FileWriter(fileName)).build();
-                writer.writeAll(csvBody);
+                data.add(row,cells);
+                //
+                ICSVWriter writer = csvConfig.getWriter();
+                writer.writeAll(data);
                 writer.flush();
-                writer.close();
+                csvConfig.close();
+
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
                 main.notifyError(e.getMessage());
