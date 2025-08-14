@@ -98,5 +98,12 @@ public class QryToSqlTranslatorTest {
 
     }
 
+    @Test
+    void drewagStyle(){
+        // wpa_-Schema -->   wpa_skn_o1_schema.rohr_messwerte[rohr_id]wpa_skn_o1_schema.rohr --> w.a[<b>_id]w.b
+        QryToSqlTranslator qryToSqlTranslator = new QryToSqlTranslator();
+        assertEquals("select * from wpa_s.rohr_messwerte join wpa_s.rohr on wpa_s.rohr_messwerte.rohr_id = wpa_s.rohr.rohr_id",qryToSqlTranslator.translate("wpa_s.rohr_messwerte[]wpa_s.rohr"));
+    }
+
 
 }

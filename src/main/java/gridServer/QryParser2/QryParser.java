@@ -22,12 +22,12 @@ public class QryParser {
             "SelectAndGroup => BLOCK_START cols:selectOrGroupCols SelectCols? BLOCK_END \n" +
             "OrderByKeyword => 'ORDER BY' | 'order by' | 'O' \n" +
             "OrderBy => SPACE+ OrderByKeyword SPACE cols:orderByCols \n" +
-            "WhereClause => '(?i)(.*?)(?= order by | O | group by | G | limit | l | H | HAVING | /\\*|$)' \n" +  // TODO backtracking, non-greedy - good thing - Hint-tokens already claimed
+            "WhereClause => '(?is)(.*?)(?= order by | O | group by | G | limit | l | H | HAVING | /\\*|$)' \n" +  // TODO backtracking, non-greedy - good thing - Hint-tokens already claimed
             "WhereKeyword => 'WHERE' | 'where' | 'W' \n" +
-            "Where => SPACE+ WhereKeyword SPACE+  WhereClause \n" +
+            "Where => SPACE+ WhereKeyword SPACE+ WhereClause \n" +
             "HavingClause => '(?i)(.*?)(?= limit | l | /\\*|$)' \n" +  // TODO backtracking, non-greedy - good thing - Hint-tokens already claimed
             "HavingKeyword => 'Having' | 'HAVING' | 'having' | 'H' \n" +
-            "Having => SPACE+ HavingKeyword SPACE+  HavingClause \n" +
+            "Having => SPACE+ HavingKeyword SPACE+ HavingClause \n" +
             "LimitClause => NUMBER:limitLower DELIMITER NUMBER:limitUpper | NUMBER:limitUpper \n" +
             "LimitKeyword => 'Limit' | 'LIMIT' | 'limit' | 'L' \n" +
             "Limit => SPACE+ LimitKeyword SPACE LimitClause \n" +

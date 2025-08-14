@@ -198,6 +198,11 @@ class QrySyntaxTest {
                 ,"erp_import_article[]erp_import_article_av W key like '%igest%'");
     }
 
-
+    @Test
+    void normalizeQuery(){
+        assertEquals("SELECT * FROM table", QrySyntax.normalizeQuery("SELECT * FROM table"));
+        assertEquals("a[]b", QrySyntax.normalizeQuery("a\n[]b"));
+        assertEquals("a[]b W", QrySyntax.normalizeQuery("a\n[]b\nW"));
+    }
 
 }

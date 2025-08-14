@@ -233,9 +233,22 @@ public class QrySyntax {
         return query;
     }
 
+    public static String normalizeQuery(String query) {
+        // replace all line break and following indents
+        // remove space if line break is between char-[ or ]-char - too keep QRY syntax
+        // but keep space in between strings
+        // - do not merge WHERE/ORDER.. CLAUSES !!!
+        String normalizedQuery = query.replaceAll( "\\]\\s*[\\r\\n]+\\s*","]");
+        normalizedQuery = normalizedQuery.replaceAll( "\\s*[\\r\\n]+\\s*\\[","[");
+        normalizedQuery = normalizedQuery.replaceAll( "[\\r\\n]+\\s*]"," ");
+        normalizedQuery = normalizedQuery.replaceAll("(?i)(\\]W |\\]where )", "] where ");
+        normalizedQuery = normalizedQuery.replaceAll("(?i)(\\]O |\\]order by )", "] order by ");
+        return normalizedQuery.trim();
+    }
+
     static Block parseToQryStmt(Map<String, String> params, QryResponse qryResponse, String query) {
         QryParser parser = new QryParser();
-        Block block = parser.parse(query.trim());
+        Block block = parser.parse(normalizeQuery(query));
         if (null != block) {
             List<Block> trgTabBlocks = block.getBlocks("trgTab");
             if (null != trgTabBlocks && !trgTabBlocks.isEmpty()) {

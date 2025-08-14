@@ -35,7 +35,7 @@ public class DataConPostgres implements DataConnector{
 
     @Override
     public boolean matches(String query, Map<String, String> params) {
-        return query.matches("(?i)(s |select ).+") || query.equals("dbTab") || query.startsWith("dbTab ") || checkForTableName(query,params);
+        return query.matches("(?is)(s |select ).+") || query.equals("dbTab") || query.startsWith("dbTab ") || checkForTableName(query,params);
     }
 
 
@@ -78,7 +78,7 @@ public class DataConPostgres implements DataConnector{
         // assume 1 (non-keyword word) is table-name
         String firstWordResult = "";
         String firstWord = query.replaceFirst("(?s)^.*?\\sfrom\\s+",""); // skipp SQL-select
-        firstWord = firstWord.replaceFirst("(?s)[^a-zA-Z0-9_\"].*$",""); // allow \" for table-names with spaces or camelCase
+        firstWord = firstWord.replaceFirst("(?s)[^a-zA-Z0-9_\".].*$",""); // allow \" for table-names with spaces or camelCase, allow schema-prefix
 
         // if database changes - clear check-Map
         //  as table-names are different for different databases
@@ -128,7 +128,6 @@ public class DataConPostgres implements DataConnector{
         }
         return data;
     }
-
 
     @Override
     public QryResponse run(String query, Map<String, String> params, QryResponse qryResponse) {
@@ -191,6 +190,10 @@ public class DataConPostgres implements DataConnector{
 
 
     public QryResponse read(String query, Map<String, String> params) {
+        boolean publicOnly = params.containsKey("publicOnly");
+        String tableIdentifier = publicOnly ? "t.table_name" : "t.table_schema || '.' || t.table_name";
+        String tableQuoted = false ? "\"" + tableIdentifier + "\"" : tableIdentifier ; // must not be used fro drewag
+        String limitSchema = publicOnly ? "table_schema = 'public' and " : "table_schema not in ('pg_catalog', 'information_schema') and table_schema ~*'^[^_]' and ";
         if (query.equals("dbTab") || query.startsWith("dbTab ") /*ignore changed-limit-clause / UPDATE ...*/
                 || query.equals("select * from dbTab") || query.startsWith("select * from dbTab ")) {
             // exclude views as they are usually expensive
@@ -198,19 +201,19 @@ public class DataConPostgres implements DataConnector{
                     "union all " +
                     "SELECT 'select null tab, null::timestamptz creationdate , null::timestamptz lastmodified, 0 cnt, 0 ins_, 0 upd_ where 1=0' " +
                     "union all " +
-                    "SELECT concat(' union all select ''',t.table_name,''' tab, ', coalesce(col,'null::timestamptz creationdate , null::timestamptz lastmodified, count(*) cnt, null::bigint ins_, null::bigint upd_')  , ' from \"',t.table_name,'\"') qry  \n" +
+                    "SELECT concat(' union all select ''',"+ tableIdentifier + ",''' tab, ', coalesce(col,'null::timestamptz creationdate , null::timestamptz lastmodified, count(*) cnt, null::bigint ins_, null::bigint upd_')  , ' from ',"+ tableQuoted + ") qry  \n" +
                     "FROM information_schema.tables t\n" +
                     "  left join (\n" +
                     "   SELECT  table_name, 'min(creationdate), max(lastmodified), count(*) cnt, count(case when creationdate > current_date - 1  then 1 end ) ins_, count(case when lastmodified > current_date - 1  then 1 end ) upd_' col  \n" +
                     "     FROM information_schema.columns\n" +
-                    "     WHERE table_schema = 'public' and column_name = 'creationdate'\n" +
+                    "     WHERE " + limitSchema + "column_name = 'creationdate'\n" +
                     "     group by table_name\n" +
                     "  ) t2 on t2.table_name=t.table_name\n" +
-                    "WHERE table_schema = 'public' and table_type='BASE TABLE' " +
+                    "WHERE " + limitSchema + "table_type='BASE TABLE' " +
                     "union all " +
-                    "SELECT concat(' union all select ''',table_name,''' tab, null::timestamptz creationdate , null::timestamptz lastmodified, count(*) cnt, null::bigint ins_, null::bigint upd_ ') qry " +
-                    " FROM information_schema.tables " +
-                    " WHERE table_schema = 'public' and table_type='VIEW' " +
+                    "SELECT concat(' union all select ''',"+ tableIdentifier + ",''' tab, null::timestamptz creationdate , null::timestamptz lastmodified, count(*) cnt, null::bigint ins_, null::bigint upd_ ') qry " +
+                    " FROM information_schema.tables t " +
+                    " WHERE " + limitSchema + "table_type='VIEW' " +
                     "union all select ') x order by (to_char(lastmodified, ''YYYY-MM-DD HH24:MI:SS''::text)) DESC NULLS LAST, 1 limit 9999 /*{\"valHndl\":{\"tab\":\"LINK\"}}*/' ";
         }
         QryResponse qryResponse = read(query, params, false);

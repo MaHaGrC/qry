@@ -126,14 +126,25 @@ public class QryToSqlTranslator {
                 //
                 if (colsSrc.isEmpty() && colsTrg.isEmpty()) {
 
-                    if (joinQry.getBlocks("JoinNatRev").size() > 0) {
-                        // [<] - Natural Join Reverse
-                        colsSrc = tabTrgPure;
-                        colsTrg = "id";
+                    if (tabSrc.startsWith("wpa_")) {
+                        // a[]b -> a[<b>_id][<b>_id]b
+                        // keep schema ...
+                        String joinCol = ((joinQry.getBlocks("JoinNatRev").size() > 0) ? tabSrcPure : tabTrgPure ) + "_id";
+                        // KLUDGE ... remove schema
+                        joinCol = joinCol.replaceFirst("^[^.]+\\.", "");
+                        colsSrc = tabSrcPure + "." + joinCol;
+                        colsTrg = tabTrgPure + "." + joinCol;
                     } else {
-                        // [] - Natural Join
-                        colsSrc = "id";
-                        colsTrg = tabSrcPure.replace("_", "");
+                        // a[]b -> a[id][<a>]b
+                        if (joinQry.getBlocks("JoinNatRev").size() > 0) {
+                            // [<] - Natural Join Reverse
+                            colsSrc = tabTrgPure;
+                            colsTrg = "id";
+                        } else {
+                            // [] - Natural Join
+                            colsSrc = "id";
+                            colsTrg = tabSrcPure.replace("_", "");
+                        }
                     }
                     append( colDef(tabSrcAlias, colsSrc ) + " = " + colDef(tabTrgAlias, colsTrg));
 
