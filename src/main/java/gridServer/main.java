@@ -413,15 +413,26 @@ public class main {
                             urlHelper.setConnectionId(login); // enforce consistency
                         }
 
-
+                        String connectionId = urlHelper.getConnectionId();
+                        if (urlHelper.getHost().isEmpty() || urlHelper.getScheme().isEmpty()) {
+                            // try to reuse
+                            String connectionKnown = connectionUrls.get(connectionId);
+                            if (null != connectionKnown && !connectionKnown.isEmpty()) {
+                                main.notifyInfo("reuse Credetials from connectionId (" + connectionId + ")");
+                                UrlHelper urlHelper2 = new UrlHelper(connectionKnown);
+                                urlHelper = urlHelper2;
+                            }
+                        } else {
+                            connectionUrls.put( connectionId, urlHelper.getUrl(true));
+                        }
                         if (urlHelper.getHost().isEmpty()) {
-                            if (login.toUpperCase().endsWith("VM")  || login.toUpperCase().endsWith("LOCAL")
-                                    || login.toUpperCase().endsWith("DOCKER") ) {
-                                main.notifyInfo( "try generate from login-name (empty host, no matching keypass)");
+                            if (login.toUpperCase().endsWith("VM") || login.toUpperCase().endsWith("LOCAL")
+                                    || login.toUpperCase().endsWith("DOCKER")) {
+                                main.notifyInfo("try generate from login-name (empty host, no matching keypass)");
                                 UrlHelper urlHelper2 = getVMUrl(login);
-                                urlHelper2.setUserPwd( urlHelper.getUserPwd() ); // take over PWD
-                                main.notifyInfo( "try credentials from login-name (" + urlHelper2.getUrlMaskedPWD() + ")");
-                                if (null != urlHelper2){
+                                urlHelper2.setUserPwd(urlHelper.getUserPwd()); // take over PWD
+                                main.notifyInfo("try credentials from login-name (" + urlHelper2.getUrlMaskedPWD() + ")");
+                                if (null != urlHelper2) {
                                     urlHelper = urlHelper2;
                                 }
                             }
