@@ -1,7 +1,6 @@
 package gridServer;
 
 
-import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.rapidoid.http.Req;
@@ -396,7 +395,7 @@ public class main {
                 String msg = "";
                 String login = params.get("login");
                 String urlStr = params.get("url");
-                String userPwdStr = params.get("userPwd");
+                String userPwdStr = params.get("userPwd"); // TODO may override PWD in urlString !!!
 
                 if ( null != login && !login.isEmpty()) {
 
@@ -492,6 +491,10 @@ public class main {
                                     matchingDataConnectors.add(dataConnector);
                                     msg = "OK   login - " + url.getUrlMaskedPWD() + " valid for "
                                             + matchingDataConnectors.size() + " connector(s) (" + matchingDataConnectors.toArray()[0].getClass().getName() + ")";
+                                    // update in secrets ...
+                                    url.setConnectionId(login);
+                                    secretHandler = new SecretHandler();
+                                    secretHandler.saveConnection(url);
                                 }
                             }
                         }
@@ -773,7 +776,6 @@ public class main {
 
 
 
-    @NotNull
     private static UrlHelper getVMUrl(String login) {
         UrlHelper urlHelper2 = new UrlHelper(login);
         // jdbc:postgresql://pagen@192.168.56.114:5432/pagen

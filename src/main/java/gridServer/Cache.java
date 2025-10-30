@@ -1,7 +1,6 @@
 package gridServer;
 
 
-import org.jetbrains.annotations.NotNull;
 import org.rapidoid.http.Req;
 
 import java.io.*;
@@ -23,7 +22,6 @@ public class Cache implements DataConnector {
         return hash.length() < 4 ? "0000" + hash : hash;
     }
 
-    @NotNull
     private static File getBaseFile(String hash) {
         return new File("data/cache/" + hash.substring(0, 2) + "/" + hash.substring(2, 4) + "/" + hash);
     }

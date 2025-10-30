@@ -1,16 +1,18 @@
 package gridServer;
 
-import com.bea.xml.stream.util.SymbolTable;
 import org.linguafranca.pwdb.kdbx.KdbxCreds;
 import org.linguafranca.pwdb.kdbx.dom.DomDatabaseWrapper;
 import org.linguafranca.pwdb.kdbx.dom.DomEntryWrapper;
 import org.linguafranca.pwdb.kdbx.dom.DomGroupWrapper;
+import org.linguafranca.pwdb.kdbx.simple.SimpleDatabase;
+import org.linguafranca.pwdb.kdbx.simple.SimpleEntry;
+import org.linguafranca.pwdb.kdbx.simple.SimpleGroup;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.net.URLEncoder;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.*;
@@ -19,11 +21,11 @@ public class SecretHandler {
 
     // test with:   "url.check data/2024_iPIM_QRY.kdbx"
 
-    protected final String keypassShortPathName = "data/2024_iPIM_QRY_short.kdbx";
-    protected final String keypassPathName =  "data/2024_iPIM_QRY.kdbx";
+    protected final static String keypassShortPathName = "data/secrets_qry_short.kdbx";
+    protected final static String keypassPathName =  "data/secrets_qry.kdbx";
     private List<String[]> csvData;
     private static Map<String,UrlHelper> loginUrlCache = new HashMap<>();
-    private static String pwd;
+    private static String pwd="tst";  /// TODO -
 
     public boolean credentialsAvailable(){
         return null != pwd;
@@ -264,7 +266,7 @@ public class SecretHandler {
         return url;
     }
 
-    private UrlHelper getKdbxCreds4LoginInternal(UrlHelper urlFilter, String keypassPathName) {
+    UrlHelper getKdbxCreds4LoginInternal(UrlHelper urlFilter, String keypassPathName) {
         UrlHelper urlHelper = null;
         if (null == pwd || pwd.isEmpty()) {
             System.out.println("      " + "getKdbxCreds - please set pwd first ...");
@@ -334,11 +336,17 @@ public class SecretHandler {
                 break;
             }
         }
-        if (null == url) {
-            for (DomGroupWrapper childGroup : group.getGroups()) {
-                if (null == url && childGroup.getName().toLowerCase().contains( urlFilter.getConnectionId().toLowerCase(Locale.ROOT).substring(0,2))) {
-                    url = getKdbxCreds4Login(childGroup, urlFilter, keypassPathName);
+        if (null == url ) {
+            if (urlFilter.getConnectionId().length() > 2 ) {
+                // ???????: 2 chars are enough to match ... ?????
+                String urlFilterSubstring = urlFilter.getConnectionId().toLowerCase(Locale.ROOT).substring(0, 2);
+                for (DomGroupWrapper childGroup : group.getGroups()) {
+                    if (null == url && childGroup.getName().toLowerCase().contains(urlFilterSubstring)) {
+                        url = getKdbxCreds4Login(childGroup, urlFilter, keypassPathName);
+                    }
                 }
+            } else {
+                System.out.printf("connectionId '%s' too short - no match found\n", urlFilter.getConnectionId());
             }
         }
         return url;
@@ -416,6 +424,154 @@ public class SecretHandler {
         return url;
     }
 
+
+    /*
+    --------------------------------------------------------------------------------------------------------
+    java.lang.reflect.InaccessibleObjectException:
+        JVM-PARAM +=  --add-opens java.base/java.util=ALL-UNNAMED --add-opens java.base/java.lang=ALL-UNNAMED
+
+
+     */
+
+    public static void createKeyStorage(String filePath, String masterPassword) {
+        try {
+            SimpleDatabase database = openOrCreateKeyStorage(filePath, masterPassword);
+
+            UrlHelper urlHelper = new UrlHelper("http://sample_user3:sample_password3@example.com");
+            SimpleEntry entry = addOrUpdateEntry(database, urlHelper, "This is a sample entry");
+            // entry.setTitle( entry.getTitle() + " (modified)" );
+
+            saveKeyStorage( database, filePath, masterPassword );
+
+        } catch (Exception e) {
+            System.err.println("Error creating key storage: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    public static void saveConnection( UrlHelper urlHelper) {
+        if (null == pwd || pwd.isEmpty() ) {
+            main.notifyError("to store connection please set keypass-pwd first (credentials for keypass missing) ...");
+        } else {
+            try {
+                SimpleDatabase database = openOrCreateKeyStorage( keypassPathName, pwd);
+                SimpleEntry entry = addOrUpdateEntry(database, urlHelper, null);
+                saveKeyStorage( database, keypassPathName, pwd );
+
+            } catch (Exception e) {
+                System.err.println("Error creating key storage: " + e.getMessage());
+                e.printStackTrace();
+            }
+
+        } // pwd not empty ...
+    }
+
+    /**
+     * Opens or creates an existing KeePass database
+     */
+    public static SimpleDatabase openOrCreateKeyStorage(String filePath, String masterPassword) {
+        // check if a file exists
+        if (new File(filePath).exists()) {
+            try {
+                KdbxCreds credentials = new KdbxCreds(masterPassword.getBytes());
+                return SimpleDatabase.load(credentials, new java.io.FileInputStream(filePath));
+            } catch (Exception e) {
+                if (e.getCause() instanceof java.lang.reflect.InaccessibleObjectException) {
+                    System.err.println("ERROR: Java module system is blocking reflective access.");
+                    System.err.println("Please add the following JVM argument to your run configuration:");
+                    System.err.println("  --add-opens java.base/java.util=ALL-UNNAMED");
+                    System.err.println("\nFor IntelliJ: Run → Edit Configurations → VM options");
+                    System.err.println("For Maven: Add <argLine> to maven-surefire-plugin configuration");
+                } else {
+                    System.err.println("Error opening key storage: " + e.getMessage());
+                    e.printStackTrace();
+                }
+                throw new RuntimeException(e);
+            }
+        }
+        return new SimpleDatabase();
+    }
+
+    public static SimpleEntry addOrUpdateEntry(SimpleDatabase database, UrlHelper urlHelper, String notes) {
+        String connectionId = urlHelper.getConnectionId();
+        if (connectionId.isEmpty()) {
+            connectionId = urlHelper.getUserName() + "@" + urlHelper.getHost();
+        }
+        return addOrUpdateEntry(database, urlHelper, notes, connectionId);
+    }
+
+    /*
+        key = path + "/" + entry.title
+     */
+    public static SimpleEntry addOrUpdateEntry(SimpleDatabase database, UrlHelper urlHelper, String notes, String key) {
+        String groupName = key.contains("/") ? key.substring(0, key.lastIndexOf('/')) : "AUTO";
+        String title = key.contains("/") ? key.substring(key.lastIndexOf('/') + 1) : key;
+
+        SimpleGroup group = findOrCreateGroup(database, groupName);
+        // check if entry already exists
+        SimpleEntry entry = null;
+        for (SimpleEntry entryCur : group.getEntries()) {
+            if (entryCur.getTitle().equals(title)) {
+                entry = entryCur;
+            }
+        }
+        if (null == entry) {
+            entry = database.newEntry(title);
+            group.addEntry(entry);
+        }
+
+        entry.setUsername(urlHelper.getUserName());
+        entry.setPassword(urlHelper.getUserPwd());
+        entry.setUrl(urlHelper.getUrl(false));
+        if (null != notes && !notes.isEmpty()) { // keep notes if entries are updated ...
+            entry.setNotes(notes);
+        }
+        System.out.println("Updated " + key + " (" + groupName + " / " + entry.getTitle() + " : " + urlHelper.getUrl(false) + ")");
+        return entry;
+    }
+
+    public static SimpleGroup findOrCreateGroup(SimpleDatabase database, String groupPath) {
+        SimpleGroup groupCur = database.getRootGroup();
+        String[] paths = groupPath.split("/");
+        boolean found = false;
+        for (String path : paths) {
+            if (!path.isEmpty()) { // skipp leading/trailing delimiter
+                // Search for existing group
+                found=false;
+                for (SimpleGroup group : groupCur.getGroups()) {
+                    if (group.getName().equals(path)) {
+                        groupCur = group;
+                        found = true;
+                        break;
+                    } // found
+                } // search child groups
+                // Create new group if not found
+                if (!found) {
+                    SimpleGroup newGroup = database.newGroup(path);
+                    groupCur.addGroup(newGroup);
+                    groupCur = newGroup;
+                } // create new group
+            } // path.length
+        } // path segments
+        return groupCur;
+    }
+
+    public static void saveKeyStorage(SimpleDatabase database, String filePath, String masterPassword) {
+        try{
+            KdbxCreds credentials = new KdbxCreds(masterPassword.getBytes());
+            String filePathTemp = filePath + ".tmp";
+            try (OutputStream outputStream = new FileOutputStream(filePathTemp)) {
+                Files.copy(Paths.get(filePath), Paths.get(filePath+".bak"), StandardCopyOption.REPLACE_EXISTING);
+                database.save(credentials, outputStream);
+                // preserve existing file on error
+                Files.move(Paths.get(filePathTemp), Paths.get(filePath), StandardCopyOption.REPLACE_EXISTING);
+            }
+            System.out.println("Key storage created successfully at: " + filePath);
+        } catch (Exception e) {
+            System.err.println("Error creating key storage: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
 
 }
 
